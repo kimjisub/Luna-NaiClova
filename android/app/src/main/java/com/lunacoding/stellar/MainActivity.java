@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 	
 	ScrollView SV_scrollView;
 	LinearLayout LL_list;
+	LinearLayout LL_keyword_list;
 	View V_button;
 	ImageView[] IVs_status;
 	
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 	void initVar() {
 		SV_scrollView = findViewById(R.id.SV_scrollView);
 		LL_list = findViewById(R.id.LL_list);
+		LL_keyword_list = findViewById(R.id.keyword_list);
 		V_button = findViewById(R.id.V_button);
 		IVs_status = new ImageView[]{
 			findViewById(R.id.IV_status_1_waiting),
@@ -69,6 +71,37 @@ public class MainActivity extends AppCompatActivity {
 		IVs_status[0].setAlpha(1);
 		
 		mapData = new HashMap<>();
+		
+		KeywordView keywordView = new KeywordView(MainActivity.this);
+		keywordView.setText("test");
+		keywordView.setChecked(true);
+		keywordView.setOnEventListener(new KeywordView.OnEventListener() {
+			@Override
+			public void onViewClick(KeywordView v) {
+				v.setChecked(!v.isChecked());
+			}
+			
+			@Override
+			public void onViewLongClick(KeywordView v) {
+			
+			}
+		});
+		KeywordView keywordView1 = new KeywordView(MainActivity.this);
+		keywordView1.setText("test2");
+		keywordView1.setChecked(false);
+		keywordView1.setOnEventListener(new KeywordView.OnEventListener() {
+			@Override
+			public void onViewClick(KeywordView v) {
+				v.setChecked(!v.isChecked());
+			}
+			
+			@Override
+			public void onViewLongClick(KeywordView v) {
+			
+			}
+		});
+		LL_keyword_list.addView(keywordView);
+		LL_keyword_list.addView(keywordView1);
 	}
 	
 	@Override
