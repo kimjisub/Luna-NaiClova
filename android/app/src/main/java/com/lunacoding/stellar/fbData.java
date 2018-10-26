@@ -18,12 +18,12 @@ public class fbData {
 	public String ip = "";
 	public boolean isCalled = false;
 	public String name = "";
-	public boolean status=false;
+	public boolean status = false;
 	
 	public fbData() {
 	}
 	
-	public fbData(int callNum, int code, long connectionTime, String ip , boolean isCalled, String name , boolean status) {
+	public fbData(int callNum, int code, long connectionTime, String ip, boolean isCalled, String name, boolean status) {
 		this.callNum = callNum;
 		this.code = code;
 		this.connectionTime = connectionTime;
