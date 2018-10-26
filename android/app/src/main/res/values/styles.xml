@@ -9,6 +9,8 @@
 
 		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
 		<item name="android:windowTranslucentStatus">true</item>
+		
+		<item name="android:fontFamily">@font/nanum_square_round_r</item>
 	</style>
 
 </resources>
