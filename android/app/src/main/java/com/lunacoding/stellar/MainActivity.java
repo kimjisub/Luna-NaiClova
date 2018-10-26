@@ -25,6 +25,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.lunacoding.stellar.firestore.Command;
+import com.lunacoding.stellar.view.KeywordView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
 		LL_keyword_list.addView(keywordView);
 		LL_keyword_list.addView(keywordView1);
 	}
+	
+	// ========================================================================================= Start
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -201,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
 		
 	}
 	
+	// ========================================================================================= Recognition
+	
 	private RecognitionListener recognitionListener = new RecognitionListener() {
 		@Override
 		public void onReadyForSpeech(Bundle bundle) {
@@ -249,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
 			addInputMessage(msg);
 			
 			boolean found = false;
-			
 			Command command = null;
 			
 			for (int i = 0; i < mapData.size(); i++) {
@@ -268,11 +272,11 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 			
-			if (found) {
+			if (found)
 				addOutputMessage(command.response);
-			} else {
+			else
 				addOutputMessage("알아듣지 못했어요 ㅠㅠ");
-			}
+			
 		}
 		
 		@Override
@@ -286,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	};
 	
+	// ========================================================================================= Status
 	
 	int prevIndex = 0;
 	int nowIndex = 0;
@@ -307,6 +312,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
+	// ========================================================================================= Add message
+	
 	void addInputMessage(String msg) {
 		LinearLayout linearLayout = (LinearLayout) View.inflate(MainActivity.this, R.layout.message_in, null);
 		((TextView) linearLayout.findViewById(R.id.textview)).setText(msg);
@@ -321,8 +328,16 @@ public class MainActivity extends AppCompatActivity {
 		tts(msg);
 		
 		LL_list.addView(linearLayout);
-		SV_scrollView.post(new Runnable() { @Override public void run() { SV_scrollView.smoothScrollBy(0, 10000); } });
+		SV_scrollView.post(new Runnable() {
+			@Override
+			public void run() {
+				SV_scrollView.smoothScrollBy(0, 10000);
+			}
+		});
 	}
+	
+	
+	// =========================================================================================
 	
 	
 	void tts(String msg) {
@@ -353,5 +368,4 @@ public class MainActivity extends AppCompatActivity {
 		}
 		return true;
 	}
-	
 }
