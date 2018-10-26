@@ -9,6 +9,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import com.gun0912.tedpermission.TedPermission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.Inflater;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -160,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 			
 			log("onResults: " + rs[0]);
 			//TV_search.setText(rs[0]);
-			addText(rs[0]);
+			addInputMessage(rs[0]);
 			
 			boolean found = false;
 			int i = 0;
@@ -177,13 +179,13 @@ public class MainActivity extends AppCompatActivity {
 			
 			if (found) {
 				if (data.status) {
-					addText(data.name + "을 찾았습니다.");
+					addOutputMessage(data.name + "을 찾았습니다.");
 					
 				} else {
-					addText(data.name + " 장치가 꺼져있습니다.");
+					addOutputMessage(data.name + " 장치가 꺼져있습니다.");
 				}
 			} else {
-				addText("찾을 수 없습니다.");
+				addOutputMessage("찾을 수 없습니다.");
 			}
 		}
 		
@@ -291,11 +293,18 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
-	void addText(String msg) {
-		TextView textView = new TextView(MainActivity.this);
-		textView.setText(msg);
+	void addInputMessage(String msg) {
+		LinearLayout linearLayout = (LinearLayout) View.inflate(MainActivity.this, R.layout.message_in, null);
+		((TextView)linearLayout.findViewById(R.id.textview)).setText(msg);
 		
-		LL_list.addView(textView);
+		LL_list.addView(linearLayout);
+	}
+	
+	void addOutputMessage(String msg) {
+		LinearLayout linearLayout = (LinearLayout) View.inflate(MainActivity.this, R.layout.message_out, null);
+		((TextView)linearLayout.findViewById(R.id.textview)).setText(msg);
+		
+		LL_list.addView(linearLayout);
 	}
 	
 	
