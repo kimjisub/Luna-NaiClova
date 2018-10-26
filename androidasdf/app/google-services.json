@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "761920402571",
+    "firebase_url": "https://white-stick.firebaseio.com",
+    "project_id": "white-stick",
+    "storage_bucket": "white-stick.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761920402571:android:91e3035032939471",
+        "android_client_info": {
+          "package_name": "com.lunacoding.stellar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "761920402571-i27dtja7iqg6h7hfvtuc08mqpa70oevt.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "761920402571-vo3jf9mkmuhuuceg2oqrf050np262cfb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDon_xc5Xr8H5M27SCT0CFH8t6ICw_3bnQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
