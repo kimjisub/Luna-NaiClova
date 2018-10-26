@@ -12,14 +12,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
@@ -52,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
 	ArrayList arrayList;
 
-	void initVar(){
+	void initVar() {
 		TV_log = findViewById(R.id.TV_log);
 		TV_obj1 = findViewById(R.id.TV_obj1);
 		TV_obj2 = findViewById(R.id.TV_obj2);
@@ -66,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 			findViewById(R.id.IV_status_3_listning)
 		};
 
-		for(ImageView v : IVs_status)
+		for (ImageView v : IVs_status)
 			v.setAlpha(0);
 		IVs_status[0].setAlpha(1);
 	}
@@ -98,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 			.check();
 	}
 
-	void start(){
+	void start() {
 		arrayList = new ArrayList();
 
 		tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
@@ -116,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
 
 		mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
 		mRecognizer.setRecognitionListener(recognitionListener);
-
 
 
 		V_button.setOnClickListener(new View.OnClickListener() {
@@ -194,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
 			log("onResults: " + rs[0]);
 			TV_search.setText(rs[0]);
-			((LinearLayout) findViewById(R.id.LL_serchui)).animate().alpha(1).setDuration(500).start();
+			findViewById(R.id.LL_serchui).animate().alpha(1).setDuration(500).start();
 			new Handler().postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -202,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
 						@Override
 						public void run() {
 
-							((LinearLayout) findViewById(R.id.LL_serchui)).animate().alpha(0).setDuration(500).start();
+							findViewById(R.id.LL_serchui).animate().alpha(0).setDuration(500).start();
 						}
 					});
 				}
@@ -321,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
 
 	}
 
-	void changeStatus(int changeIndex){
+	void changeStatus(int changeIndex) {
 		prevIndex = nowIndex;
 		nowIndex = changeIndex;
 
@@ -359,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
 		tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
 	}
 
-	void startVoice(){
+	void startVoice() {
 		mRecognizer.startListening(recognizerIntent);
 	}
 
