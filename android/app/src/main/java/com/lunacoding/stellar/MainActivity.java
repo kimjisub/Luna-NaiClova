@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 	
 	final int WAITING = 0;
 	final int START = 1;
+	final int LISTNING = 2;
 	
 	
 	FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -179,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public void onBeginningOfSpeech() {
 			log("onBeginningOfSpeech");
+			changeStatus(LISTNING);
 		}
 		
 		@Override
