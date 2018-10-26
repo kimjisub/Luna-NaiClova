@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "597278062464",
+    "firebase_url": "https://luna-ai-secretary.firebaseio.com",
+    "project_id": "luna-ai-secretary",
+    "storage_bucket": "luna-ai-secretary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597278062464:android:f52875834c074fe0",
+        "android_client_info": {
+          "package_name": "com.lunacoding.stellar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597278062464-phomsqpka55uo5v5dh4kp5tl90nkq9me.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDv0Cck-lep_5u8ckm6Uk63lIt8m4UxAqI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
