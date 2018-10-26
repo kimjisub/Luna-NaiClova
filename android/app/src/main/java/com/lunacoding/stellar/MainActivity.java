@@ -2,7 +2,6 @@ package com.lunacoding.stellar;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -12,6 +11,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
@@ -34,16 +34,10 @@ public class MainActivity extends AppCompatActivity {
 	
 	TextToSpeech tts;
 	
-	TextView TV_log;
-	TextView TV_obj1;
-	TextView TV_obj2;
-	TextView TV_obj3;
-	TextView TV_search;
-	TextView TV_alert;
+	LinearLayout LL_list;
 	View V_button;
 	ImageView[] IVs_status;
-	int prevIndex = 0;
-	int nowIndex = 0;
+	
 	
 	final int WAITING = 0;
 	final int START = 1;
@@ -52,12 +46,7 @@ public class MainActivity extends AppCompatActivity {
 	ArrayList arrayList;
 	
 	void initVar() {
-		TV_log = findViewById(R.id.TV_log);
-		TV_obj1 = findViewById(R.id.TV_obj1);
-		TV_obj2 = findViewById(R.id.TV_obj2);
-		TV_obj3 = findViewById(R.id.TV_obj3);
-		TV_search = findViewById(R.id.TV_search);
-		TV_alert = findViewById(R.id.TV_alert);
+		LL_list = findViewById(R.id.LL_list);
 		V_button = findViewById(R.id.V_button);
 		IVs_status = new ImageView[]{
 			findViewById(R.id.IV_status_1_waiting),
@@ -125,26 +114,6 @@ public class MainActivity extends AppCompatActivity {
 		});
 		
 		
-		new GetDataList().setDataListener(new GetDataList.onDataListener() {
-			
-			@Override
-			public void onAdd(final fbData d) {
-				arrayList.add(d);
-				log("DB add " + d.code);
-			}
-			
-			@Override
-			public void onChange(final fbData d) {
-				int i = 0;
-				for (; i < arrayList.size(); i++) {
-					fbData tmp = (fbData) arrayList.get(i);
-					if (tmp.code == d.code)
-						break;
-				}
-				arrayList.set(i, d);
-				log("DB change " + d.code);
-			}
-		}).run();
 	}
 	
 	private RecognitionListener recognitionListener = new RecognitionListener() {
@@ -152,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 		public void onReadyForSpeech(Bundle bundle) {
 			log("onReadyForSpeech");
 			changeStatus(START);
-			findViewById(R.id.V_back).animate().alpha(1).setDuration(500).start();
+			
 			
 		}
 		
@@ -175,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
 		public void onEndOfSpeech() {
 			log("onEndOfSpeech");
 			changeStatus(WAITING);
-			findViewById(R.id.V_back).animate().alpha(0).setDuration(500).start();
 		}
 		
 		@Override
@@ -191,20 +159,8 @@ public class MainActivity extends AppCompatActivity {
 			mResult.toArray(rs);
 			
 			log("onResults: " + rs[0]);
-			TV_search.setText(rs[0]);
-			findViewById(R.id.LL_serchui).animate().alpha(1).setDuration(500).start();
-			new Handler().postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							
-							findViewById(R.id.LL_serchui).animate().alpha(0).setDuration(500).start();
-						}
-					});
-				}
-			}, 3000);
+			//TV_search.setText(rs[0]);
+			addText(rs[0]);
 			
 			boolean found = false;
 			int i = 0;
@@ -221,17 +177,13 @@ public class MainActivity extends AppCompatActivity {
 			
 			if (found) {
 				if (data.status) {
-					alert(data.name + "을 찾았습니다.");
-					
-					TV_obj3.setText(TV_obj2.getText());
-					TV_obj2.setText(TV_obj1.getText());
-					TV_obj1.setText(data.name);
+					addText(data.name + "을 찾았습니다.");
 					
 				} else {
-					alert(data.name + " 장치가 꺼져있습니다.");
+					addText(data.name + " 장치가 꺼져있습니다.");
 				}
 			} else {
-				alert("찾을 수 없습니다.");
+				addText("찾을 수 없습니다.");
 			}
 		}
 		
@@ -319,38 +271,33 @@ public class MainActivity extends AppCompatActivity {
 		
 	}
 	
+	int prevIndex = 0;
+	int nowIndex = 0;
+	
 	void changeStatus(int changeIndex) {
 		prevIndex = nowIndex;
 		nowIndex = changeIndex;
 		
 		IVs_status[prevIndex].animate().alpha(0).setDuration(500).start();
 		IVs_status[nowIndex].animate().alpha(1).setDuration(500).start();
-	}
-	
-	
-	void alert(final String msg) {
-		TV_alert.setText(msg);
-		TV_alert.animate().alpha(1).setDuration(500).start();
 		
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						
-						TV_alert.animate().alpha(0).setDuration(500).start();
-					}
-				});
-			}
-		}, 3000);
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				tts(msg);
-			}
-		}, 1000);
+		switch (changeIndex) {
+			case START:
+				findViewById(R.id.V_back).animate().alpha(1).setDuration(500).start();
+				break;
+			case WAITING:
+				findViewById(R.id.V_back).animate().alpha(0).setDuration(500).start();
+				break;
+		}
 	}
+	
+	void addText(String msg) {
+		TextView textView = new TextView(MainActivity.this);
+		textView.setText(msg);
+		
+		LL_list.addView(textView);
+	}
+	
 	
 	void tts(String msg) {
 		String utteranceId = this.hashCode() + "";
@@ -363,8 +310,6 @@ public class MainActivity extends AppCompatActivity {
 	
 	void log(String msg) {
 		Log.d("com.kimjisub.log", msg);
-		TV_log.append(msg + "\n");
-		TV_log.append(msg + "\n", 0, 0);
 	}
 	
 	public boolean onKeyDown(int keycode, KeyEvent event) {
@@ -376,7 +321,11 @@ public class MainActivity extends AppCompatActivity {
 			case KeyEvent.KEYCODE_VOLUME_UP:
 				startVoice();
 				break;
+			default:
+				super.onKeyDown(keycode, event);
+				break;
 		}
 		return true;
 	}
+	
 }

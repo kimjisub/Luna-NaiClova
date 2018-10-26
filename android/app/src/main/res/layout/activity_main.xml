@@ -3,7 +3,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/gradation"
+                android:background="@drawable/background"
                 tools:context="com.lunacoding.stellar.MainActivity">
 	
 	<ScrollView
@@ -12,113 +12,13 @@
 		
 		<LinearLayout
 		    android:layout_width="match_parent"
+		    android:id="@+id/LL_list"
 		    android:layout_height="wrap_content"
 		    android:orientation="vertical">
 		
 		
 		</LinearLayout>
 	
-	</ScrollView>
-	
-	<LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_marginTop="120dp"
-	    android:gravity="center"
-	    android:orientation="vertical">
-		
-		<TextView
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginBottom="20dp"
-		    android:text="─────　　방금 찾은 물건　　─────"
-		    android:textColor="#FFFF"
-		    android:textSize="15dp"/>
-		
-		<TextView
-		    android:id="@+id/TV_obj1"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginTop="3dp"
-		    android:text=""
-		    android:textColor="#FFFF"
-		    android:textSize="40dp"/>
-		
-		<TextView
-		    android:id="@+id/TV_obj2"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginTop="3dp"
-		    android:text=""
-		    android:textColor="#AFFF"
-		    android:textSize="37dp"/>
-		
-		<TextView
-		    android:id="@+id/TV_obj3"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginTop="3dp"
-		    android:text=""
-		    android:textColor="#6FFF"
-		    android:textSize="34dp"/>
-	</LinearLayout>
-	
-	<LinearLayout
-	    android:id="@+id/LL_serchui"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_marginTop="550dp"
-	    android:alpha="0"
-	    android:gravity="center"
-	    android:orientation="vertical">
-		
-		<TextView
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginBottom="20dp"
-		    android:text="─────　　검색중　　─────"
-		    android:textColor="#FFFF"
-		    android:textSize="15dp"/>
-		
-		<TextView
-		    android:id="@+id/TV_search"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginTop="3dp"
-		    android:text="드라이기가 어딨더라"
-		    android:textColor="#FFFF"
-		    android:textSize="30dp"/>
-	</LinearLayout>
-	
-	
-	<TextView
-	    android:id="@+id/TV_alert"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_marginTop="400dp"
-	    android:alpha="0"
-	    android:background="#3000"
-	    android:gravity="center"
-	    android:padding="10dp"
-	    android:text="찾을 수 없습니다."
-	    android:textColor="#FFFF"
-	    android:textSize="30dp"/>
-	
-	<ScrollView
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:alpha="0">
-		
-		<LinearLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="vertical">
-			
-			<TextView
-			    android:id="@+id/TV_log"
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"/>
-		</LinearLayout>
 	</ScrollView>
 	
 	
