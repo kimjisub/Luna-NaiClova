@@ -13,24 +13,24 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.lunacoding.stellar.firestore.Command;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 	
 	TextToSpeech tts;
 	
+	ScrollView SV_scrollView;
 	LinearLayout LL_list;
 	View V_button;
 	ImageView[] IVs_status;
@@ -49,12 +50,11 @@ public class MainActivity extends AppCompatActivity {
 	final int START = 1;
 	
 	
-	ArrayList arrayList;
-	
-	
 	FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+	Map<String, Command> mapData;
 	
 	void initVar() {
+		SV_scrollView = findViewById(R.id.SV_scrollView);
 		LL_list = findViewById(R.id.LL_list);
 		V_button = findViewById(R.id.V_button);
 		IVs_status = new ImageView[]{
@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
 		for (ImageView v : IVs_status)
 			v.setAlpha(0);
 		IVs_status[0].setAlpha(1);
+		
+		mapData = new HashMap<>();
 	}
 	
 	@Override
@@ -96,8 +98,6 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	void start() {
-		arrayList = new ArrayList();
-		
 		tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
 			@Override
 			public void onInit(int status) {
@@ -133,16 +133,32 @@ public class MainActivity extends AppCompatActivity {
 					}
 					
 					for (DocumentChange dc : snapshots.getDocumentChanges()) {
-						switch (dc.getType()) {
-							case ADDED:
-								log("New city: " + dc.getDocument().getData());
-								break;
-							case MODIFIED:
-								log("Modified city: " + dc.getDocument().getData());
-								break;
-							case REMOVED:
-								log("Removed city: " + dc.getDocument().getData());
-								break;
+						QueryDocumentSnapshot document = dc.getDocument();
+						
+						String key = document.getId();
+						
+						try {
+							
+							switch (dc.getType()) {
+								case ADDED:
+									mapData.put(key, new Command(document));
+									log("New: " + key);
+									log(new Command(document).toString());
+									break;
+								case MODIFIED:
+									mapData.put(key, new Command(document));
+									log("Modified: " + key);
+									log(new Command(document).toString());
+									break;
+								case REMOVED:
+									mapData.remove(key);
+									log("Removed: " + key);
+									log(new Command(document).toString());
+									break;
+							}
+						} catch (Exception e1) {
+							log("error: " + key);
+							e1.printStackTrace();
 						}
 					}
 					
@@ -192,33 +208,35 @@ public class MainActivity extends AppCompatActivity {
 			
 			String[] rs = new String[mResult.size()];
 			mResult.toArray(rs);
+			String msg = rs[0];
 			
-			log("onResults: " + rs[0]);
-			//TV_search.setText(rs[0]);
-			addInputMessage(rs[0]);
+			log("onResults: " + msg);
+			addInputMessage(msg);
 			
 			boolean found = false;
-			int i = 0;
-			fbData data = null;
-			for (; i < arrayList.size(); i++) {
-				data = (fbData) arrayList.get(i);
-				if (rs[0].contains(data.name)) {
-					DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-					database.child("data").child(data.code + "").child("isCalled").setValue(true);
+			
+			Command command = null;
+			
+			for (int i = 0; i < mapData.size(); i++) {
+				final String key = (String) mapData.keySet().toArray()[i];
+				command = mapData.get(key);
+				
+				
+				int num = 0;
+				for (String keyword : command.keyword)
+					if (msg.contains(keyword))
+						num++;
+				
+				if (num == command.keyword.size()) {
 					found = true;
 					break;
 				}
 			}
 			
 			if (found) {
-				if (data.status) {
-					addOutputMessage(data.name + "을 찾았습니다.");
-					
-				} else {
-					addOutputMessage(data.name + " 장치가 꺼져있습니다.");
-				}
+				addOutputMessage(command.response);
 			} else {
-				addOutputMessage("찾을 수 없습니다.");
+				addOutputMessage("알아듣지 못했어요 ㅠㅠ");
 			}
 		}
 		
@@ -259,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
 		((TextView) linearLayout.findViewById(R.id.textview)).setText(msg);
 		
 		LL_list.addView(linearLayout);
+		//SV_scrollView.post(new Runnable() { @Override public void run() { SV_scrollView.smoothScrollBy(0, 10000); } });
 	}
 	
 	void addOutputMessage(String msg) {
@@ -266,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
 		((TextView) linearLayout.findViewById(R.id.textview)).setText(msg);
 		
 		LL_list.addView(linearLayout);
+		SV_scrollView.post(new Runnable() { @Override public void run() { SV_scrollView.smoothScrollBy(0, 10000); } });
 	}
 	
 	
@@ -279,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	void log(String msg) {
-		Log.d("com.kimjisub.log", msg);
+		Log.e("com.lunacoding.log", msg);
 	}
 	
 	public boolean onKeyDown(int keycode, KeyEvent event) {

@@ -7,11 +7,11 @@
                 tools:context="com.lunacoding.stellar.MainActivity">
 	
 	<ScrollView
+	    android:id="@+id/SV_scrollView"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent">
 		
 		<LinearLayout
-		    android:id="@+id/LL_list"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:orientation="vertical">
@@ -19,7 +19,19 @@
 			<View
 			    android:layout_width="match_parent"
 			    android:layout_height="30dp"/>
-		
+			
+			<LinearLayout
+			    android:id="@+id/LL_list"
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="vertical">
+			
+			
+			</LinearLayout>
+			
+			<View
+			    android:layout_width="match_parent"
+			    android:layout_height="120dp"/>
 		
 		</LinearLayout>
 	
