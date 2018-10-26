@@ -6,10 +6,10 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,13 +20,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.zip.Inflater;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -46,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
 	
 	
 	ArrayList arrayList;
+	
+	
+	FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 	
 	void initVar() {
 		LL_list = findViewById(R.id.LL_list);
@@ -115,6 +122,32 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 		
+		
+		firestore.collection("command")
+			.addSnapshotListener(new EventListener<QuerySnapshot>() {
+				@Override
+				public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
+					if (e != null) {
+						log("listen:error" + e);
+						return;
+					}
+					
+					for (DocumentChange dc : snapshots.getDocumentChanges()) {
+						switch (dc.getType()) {
+							case ADDED:
+								log("New city: " + dc.getDocument().getData());
+								break;
+							case MODIFIED:
+								log("Modified city: " + dc.getDocument().getData());
+								break;
+							case REMOVED:
+								log("Removed city: " + dc.getDocument().getData());
+								break;
+						}
+					}
+					
+				}
+			});
 		
 	}
 	
@@ -200,78 +233,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	};
 	
-	public static class GetDataList {
-		FirebaseDatabase database;
-		DatabaseReference myRef;
-		
-		private onDataListener dataListener = null;
-		
-		public interface onDataListener {
-			void onAdd(fbData data);
-			
-			void onChange(fbData data);
-		}
-		
-		
-		public GetDataList setDataListener(onDataListener listener) {
-			this.dataListener = listener;
-			return this;
-		}
-		
-		void onAdd(fbData data) {
-			if (dataListener != null)
-				dataListener.onAdd(data);
-		}
-		
-		void onChange(fbData data) {
-			if (dataListener != null)
-				dataListener.onChange(data);
-		}
-		
-		
-		public void run() {
-			database = FirebaseDatabase.getInstance();
-			myRef = database.getReference("data");
-			
-			myRef.addChildEventListener(new ChildEventListener() {
-				@Override
-				public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-					try {
-						fbData data = dataSnapshot.getValue(fbData.class);
-						onAdd(data);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
-				@Override
-				public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-					try {
-						fbData data = dataSnapshot.getValue(fbData.class);
-						onChange(data);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
-				@Override
-				public void onChildRemoved(DataSnapshot dataSnapshot) {
-				
-				}
-				
-				@Override
-				public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-				
-				}
-				
-				@Override
-				public void onCancelled(DatabaseError databaseError) {
-				
-				}
-			});
-		}
-		
-	}
 	
 	int prevIndex = 0;
 	int nowIndex = 0;
@@ -295,14 +256,14 @@ public class MainActivity extends AppCompatActivity {
 	
 	void addInputMessage(String msg) {
 		LinearLayout linearLayout = (LinearLayout) View.inflate(MainActivity.this, R.layout.message_in, null);
-		((TextView)linearLayout.findViewById(R.id.textview)).setText(msg);
+		((TextView) linearLayout.findViewById(R.id.textview)).setText(msg);
 		
 		LL_list.addView(linearLayout);
 	}
 	
 	void addOutputMessage(String msg) {
 		LinearLayout linearLayout = (LinearLayout) View.inflate(MainActivity.this, R.layout.message_out, null);
-		((TextView)linearLayout.findViewById(R.id.textview)).setText(msg);
+		((TextView) linearLayout.findViewById(R.id.textview)).setText(msg);
 		
 		LL_list.addView(linearLayout);
 	}
