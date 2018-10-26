@@ -36,6 +36,9 @@
         <pair source="c" header="h" fileNamingConvention="NONE" />
       </extensions>
     </Objective-C-extensions>
+    <XML>
+      <option name="XML_ALIGN_ATTRIBUTES" value="false" />
+    </XML>
     <codeStyleSettings language="CMake">
       <indentOptions>
         <option name="INDENT_SIZE" value="8" />
