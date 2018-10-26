@@ -46,29 +46,35 @@
 	    android:background="#a000"/>
 	
 	<RelativeLayout
-	    android:layout_width="wrap_content"
+	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentBottom="true"
 	    android:layout_centerHorizontal="true"
-	    android:layout_margin="20dp">
+	    android:padding="20dp">
 		
-		<ImageView
-		    android:id="@+id/IV_status_3_listning"
-		    android:layout_width="70dp"
-		    android:layout_height="70dp"
-		    android:background="@drawable/status_3_listning"/>
-		
-		<ImageView
-		    android:id="@+id/IV_status_2_start"
-		    android:layout_width="70dp"
-		    android:layout_height="70dp"
-		    android:background="@drawable/status_2_start"/>
-		
-		<ImageView
-		    android:id="@+id/IV_status_1_waiting"
-		    android:layout_width="70dp"
-		    android:layout_height="70dp"
-		    android:background="@drawable/status_1_waiting"/>
+		<RelativeLayout
+		    android:layout_width="wrap_content"
+		    android:layout_centerInParent="true"
+		    android:layout_height="wrap_content">
+			
+			<ImageView
+			    android:id="@+id/IV_status_3_listning"
+			    android:layout_width="70dp"
+			    android:layout_height="70dp"
+			    android:background="@drawable/status_3_listning"/>
+			
+			<ImageView
+			    android:id="@+id/IV_status_2_start"
+			    android:layout_width="70dp"
+			    android:layout_height="70dp"
+			    android:background="@drawable/status_2_start"/>
+			
+			<ImageView
+			    android:id="@+id/IV_status_1_waiting"
+			    android:layout_width="70dp"
+			    android:layout_height="70dp"
+			    android:background="@drawable/status_1_waiting"/>
+		</RelativeLayout>
 	</RelativeLayout>
 	
 	<View
