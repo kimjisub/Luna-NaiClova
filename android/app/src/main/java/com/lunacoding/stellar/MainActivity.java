@@ -283,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
 	void addOutputMessage(String msg) {
 		LinearLayout linearLayout = (LinearLayout) View.inflate(MainActivity.this, R.layout.message_out, null);
 		((TextView) linearLayout.findViewById(R.id.textview)).setText(msg);
+		tts(msg);
 		
 		LL_list.addView(linearLayout);
 		SV_scrollView.post(new Runnable() { @Override public void run() { SV_scrollView.smoothScrollBy(0, 10000); } });
