@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
 	
 	
 	FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+	private DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
+	
 	Map<String, Command> mapData;
 	
 	void initVar() {
@@ -129,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 				else {
 					String str = "";
 					
-					for(String s : AL_keywordSelected)
+					for (String s : AL_keywordSelected)
 						str += s + " ";
 					
 					sendMsg(str);
@@ -268,9 +272,10 @@ public class MainActivity extends AppCompatActivity {
 			}
 		}
 		
-		if (found)
+		if (found) {
 			addOutputMessage(command.response);
-		else
+			firebase.child("queue").push().setValue(command.command);
+		} else
 			addOutputMessage("알아듣지 못했어요 ㅠㅠ");
 	}
 	
@@ -301,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
 	ArrayList<KeywordView> AL_keywordView = new ArrayList<>();
 	ArrayList<String> AL_keywordSelected = new ArrayList<>();
 	
-	void initKeyword(){
+	void initKeyword() {
 		AL_keywordSelected.clear();
 		updateKeyword();
 	}
