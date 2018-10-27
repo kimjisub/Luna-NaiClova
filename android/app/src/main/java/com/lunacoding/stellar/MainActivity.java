@@ -279,8 +279,29 @@ public class MainActivity extends AppCompatActivity {
 		}
 		
 		if (found) {
-			addOutputMessage(command.response);
-			firebase.child("queue").push().setValue(command.command);
+			if (!command.responseStandby) {
+				addOutputMessage(command.response);
+				firebase.child("queue").push().setValue(command.command);
+			} else {
+				addOutputMessage("잠시만 기다려주세요...");
+				
+				firestore.collection("command").document(command.key)
+					.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+						@Override
+						public void onEvent(@javax.annotation.Nullable DocumentSnapshot snapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+							if (e != null) {
+								log("Listen failed." + e);
+								return;
+							}
+							
+							if (snapshot != null && snapshot.exists()) {
+								log("Current data: " + snapshot.getData());
+							} else {
+								log("Current data: null");
+							}
+						}
+					});
+			}
 		} else
 			addOutputMessage("알아듣지 못했어요 ㅠㅠ");
 	}
