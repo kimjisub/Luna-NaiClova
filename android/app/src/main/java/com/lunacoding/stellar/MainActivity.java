@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -159,24 +160,29 @@ public class MainActivity extends AppCompatActivity {
 						String key = document.getId();
 						
 						try {
-							
+							Command command;
 							switch (dc.getType()) {
 								case ADDED:
-									mapData.put(key, new Command(document));
+									command = new Command(key, document);
+									mapData.put(key, command);
 									log("New: " + key);
-									log(new Command(document).toString());
+									log(command.toString());
 									updateKeyword();
 									break;
 								case MODIFIED:
-									mapData.put(key, new Command(document));
+									command = new Command(key, document);
+									
+									mapData.put(key, command);
 									log("Modified: " + key);
-									log(new Command(document).toString());
+									log(command.toString());
 									updateKeyword();
 									break;
 								case REMOVED:
+									command = new Command(key, document);
+									
 									mapData.remove(key);
 									log("Removed: " + key);
-									log(new Command(document).toString());
+									log(command.toString());
 									updateKeyword();
 									break;
 							}

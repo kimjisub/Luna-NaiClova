@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Command {
+	public String key = "";
+	
 	public String command;
 	public ArrayList<String> keyword;
 	public String response;
@@ -32,6 +34,16 @@ public class Command {
 	}
 	
 	public Command(QueryDocumentSnapshot document) {
+		this.command = document.getString("command");
+		this.keyword = (ArrayList<String>) document.get("keyword");
+		this.response = document.getString("response");
+		this.responseStandby = document.getBoolean("responseStandby");
+		this.responseTimestamp = document.getTimestamp("responseTimestamp");
+	}
+	
+	public Command(String key, QueryDocumentSnapshot document) {
+		this.key = key;
+		
 		this.command = document.getString("command");
 		this.keyword = (ArrayList<String>) document.get("keyword");
 		this.response = document.getString("response");
