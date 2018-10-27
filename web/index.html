@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
+	<script>
+		var config = {
+			apiKey: "AIzaSyAp0gr-NeyYeQ15D90_NVkXlN4Q0BmT0dM",
+			authDomain: "luna-ai-secretary.firebaseapp.com",
+			databaseURL: "https://luna-ai-secretary.firebaseio.com",
+			projectId: "luna-ai-secretary",
+			storageBucket: "luna-ai-secretary.appspot.com",
+			messagingSenderId: "597278062464"
+		};
+		firebase.initializeApp(config);
+		db = firebase.firestore();
+
+		db.collection("command")
+		.onSnapshot((snapshot) => {
+			snapshot.docChanges().forEach((change) => {
+				if (change.type === "added") {
+					console.log("New: ", JSON.stringify(change.doc.data()));
+				}
+				if (change.type === "modified") {
+					console.log("Modified: ", JSON.stringify(change.doc.data()));
+				}
+				if (change.type === "removed") {
+					console.log("Removed: ", JSON.stringify(change.doc.data()));
+				}
+			});
+		});
+
+		function addTest() {
+			add({
+				command: "command",
+				keyword: ["key1", "key2"],
+				response: "response",
+				responseStandby: false,
+				responseTimestamp: new Date()
+			})
+		}
+
+		function add(msg) {
+			db.collection("command").add(msg)
+			.then(function(docRef) {
+				console.log("Document written with ID: ", docRef.id);
+			})
+			.catch(function(error) {
+				console.error("Error adding document: ", error);
+			});
+		}
+	</script>
+</head>
+<body>
+</body>
+</html>
