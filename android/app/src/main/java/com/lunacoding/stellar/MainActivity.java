@@ -124,7 +124,18 @@ public class MainActivity extends AppCompatActivity {
 		V_button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				startVoice();
+				if (AL_keywordSelected.size() == 0)
+					startVoice();
+				else {
+					String str = "";
+					
+					for(String s : AL_keywordSelected)
+						str += s + " ";
+					
+					sendMsg(str);
+					initKeyword();
+				}
+				
 			}
 		});
 		
@@ -221,32 +232,7 @@ public class MainActivity extends AppCompatActivity {
 			String msg = rs[0];
 			
 			log("onResults: " + msg);
-			addInputMessage(msg);
-			
-			boolean found = false;
-			Command command = null;
-			
-			for (int i = 0; i < mapData.size(); i++) {
-				final String key = (String) mapData.keySet().toArray()[i];
-				command = mapData.get(key);
-				
-				
-				int num = 0;
-				for (String keyword : command.keyword)
-					if (msg.contains(keyword))
-						num++;
-				
-				if (num == command.keyword.size()) {
-					found = true;
-					break;
-				}
-			}
-			
-			if (found)
-				addOutputMessage(command.response);
-			else
-				addOutputMessage("알아듣지 못했어요 ㅠㅠ");
-			
+			sendMsg(msg);
 		}
 		
 		@Override
@@ -259,6 +245,34 @@ public class MainActivity extends AppCompatActivity {
 			log("onEvent");
 		}
 	};
+	
+	void sendMsg(String msg) {
+		addInputMessage(msg);
+		
+		boolean found = false;
+		Command command = null;
+		
+		for (int i = 0; i < mapData.size(); i++) {
+			final String key = (String) mapData.keySet().toArray()[i];
+			command = mapData.get(key);
+			
+			
+			int num = 0;
+			for (String keyword : command.keyword)
+				if (msg.contains(keyword))
+					num++;
+			
+			if (num == command.keyword.size()) {
+				found = true;
+				break;
+			}
+		}
+		
+		if (found)
+			addOutputMessage(command.response);
+		else
+			addOutputMessage("알아듣지 못했어요 ㅠㅠ");
+	}
 	
 	// ========================================================================================= Status
 	
@@ -286,6 +300,11 @@ public class MainActivity extends AppCompatActivity {
 	
 	ArrayList<KeywordView> AL_keywordView = new ArrayList<>();
 	ArrayList<String> AL_keywordSelected = new ArrayList<>();
+	
+	void initKeyword(){
+		AL_keywordSelected.clear();
+		updateKeyword();
+	}
 	
 	void updateKeyword() {
 		AL_keywordView.clear();
