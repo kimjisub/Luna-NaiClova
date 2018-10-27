@@ -45,20 +45,24 @@
 	    android:alpha="0"
 	    android:background="#a000"/>
 	
-	<RelativeLayout
+	<LinearLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentBottom="true"
 	    android:layout_centerHorizontal="true"
+	    android:orientation="horizontal"
+	    android:weightSum="1"
 	    android:padding="20dp">
 		
 		<HorizontalScrollView
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content">
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_gravity="center"
+		    android:layout_weight="1">
 			
 			<LinearLayout
 			    android:id="@+id/keyword_list"
-			    android:layout_width="match_parent"
+			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
 			    android:orientation="horizontal">
 			
@@ -67,9 +71,9 @@
 		</HorizontalScrollView>
 		
 		<RelativeLayout
+		    android:id="@+id/button"
 		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_centerInParent="true">
+		    android:layout_height="wrap_content">
 			
 			<ImageView
 			    android:id="@+id/IV_status_3_listning"
@@ -88,14 +92,15 @@
 			    android:layout_width="70dp"
 			    android:layout_height="70dp"
 			    android:background="@drawable/status_1_waiting"/>
+			
+			<View
+			    android:id="@+id/V_button"
+			    android:layout_width="70dp"
+			    android:layout_height="70dp"/>
 		</RelativeLayout>
-	</RelativeLayout>
 	
-	<View
-	    android:id="@+id/V_button"
-	    android:layout_width="120dp"
-	    android:layout_height="120dp"
-	    android:layout_alignParentBottom="true"
-	    android:layout_centerHorizontal="true"/>
+	
+	</LinearLayout>
+
 
 </RelativeLayout>

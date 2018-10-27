@@ -72,37 +72,6 @@ public class MainActivity extends AppCompatActivity {
 		IVs_status[0].setAlpha(1);
 		
 		mapData = new HashMap<>();
-		
-		KeywordView keywordView = new KeywordView(MainActivity.this);
-		keywordView.setText("test");
-		keywordView.setChecked(true);
-		keywordView.setOnEventListener(new KeywordView.OnEventListener() {
-			@Override
-			public void onViewClick(KeywordView v) {
-				v.setChecked(!v.isChecked());
-			}
-			
-			@Override
-			public void onViewLongClick(KeywordView v) {
-			
-			}
-		});
-		KeywordView keywordView1 = new KeywordView(MainActivity.this);
-		keywordView1.setText("test2");
-		keywordView1.setChecked(false);
-		keywordView1.setOnEventListener(new KeywordView.OnEventListener() {
-			@Override
-			public void onViewClick(KeywordView v) {
-				v.setChecked(!v.isChecked());
-			}
-			
-			@Override
-			public void onViewLongClick(KeywordView v) {
-			
-			}
-		});
-		LL_keyword_list.addView(keywordView);
-		LL_keyword_list.addView(keywordView1);
 	}
 	
 	// ========================================================================================= Start
@@ -181,16 +150,19 @@ public class MainActivity extends AppCompatActivity {
 									mapData.put(key, new Command(document));
 									log("New: " + key);
 									log(new Command(document).toString());
+									updateKeyword();
 									break;
 								case MODIFIED:
 									mapData.put(key, new Command(document));
 									log("Modified: " + key);
 									log(new Command(document).toString());
+									updateKeyword();
 									break;
 								case REMOVED:
 									mapData.remove(key);
 									log("Removed: " + key);
 									log(new Command(document).toString());
+									updateKeyword();
 									break;
 							}
 						} catch (Exception e1) {
@@ -211,8 +183,6 @@ public class MainActivity extends AppCompatActivity {
 		public void onReadyForSpeech(Bundle bundle) {
 			log("onReadyForSpeech");
 			changeStatus(START);
-			
-			
 		}
 		
 		@Override
@@ -311,6 +281,114 @@ public class MainActivity extends AppCompatActivity {
 				break;
 		}
 	}
+	
+	// ========================================================================================= Keyword
+	
+	ArrayList<KeywordView> AL_keywordView = new ArrayList<>();
+	ArrayList<String> AL_keywordSelected = new ArrayList<>();
+	
+	void updateKeyword() {
+		AL_keywordView.clear();
+		LL_keyword_list.removeAllViews();
+		
+		ArrayList<String> keywords = new ArrayList<>();
+		ArrayList<String> keywords1 = new ArrayList<>();
+		ArrayList<String> keywords2 = new ArrayList<>();
+		
+		for (int i = 0; i < mapData.size(); i++) {
+			final String key = (String) mapData.keySet().toArray()[i];
+			Command command = mapData.get(key);
+			
+			
+			boolean doit = false;
+			
+			
+			if (AL_keywordSelected.size() == 0)
+				doit = true;
+			else {
+				
+				int num = 0;
+				for (String keyword1 : command.keyword) {
+					for (String keyword2 : AL_keywordSelected)
+						if (keyword1.equals(keyword2))
+							num++;
+					
+					
+				}
+				if (num == AL_keywordSelected.size())
+					doit = true;
+				
+			}
+			
+			if (doit) {
+				
+				int num = 0;
+				for (String keyword : command.keyword) {
+					boolean found = false;
+					
+					for (String s : keywords) {
+						if (keyword.equals(s)) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						boolean found2 = false;
+						for (String s : AL_keywordSelected)
+							if (keyword.equals(s)) {
+								found2 = true;
+								break;
+							}
+						if (found2) {
+							keywords.add(keyword);
+							keywords1.add(keyword);
+							
+						} else {
+							keywords.add(keyword);
+							keywords2.add(keyword);
+						}
+					}
+				}
+			}
+		}
+		
+		for (String keyword : keywords1)
+			addKeyword(keyword, true);
+		for (String keyword : keywords2)
+			addKeyword(keyword, false);
+	}
+	
+	void addKeyword(String keyword, boolean check) {
+		KeywordView keywordView = new KeywordView(MainActivity.this);
+		keywordView.setText(keyword);
+		keywordView.setChecked(check);
+		keywordView.setOnEventListener(new KeywordView.OnEventListener() {
+			@Override
+			public void onViewClick(KeywordView v) {
+				v.setChecked(!v.isChecked());
+				updateCheckedKeyword();
+			}
+			
+			@Override
+			public void onViewLongClick(KeywordView v) {
+			
+			}
+		});
+		
+		AL_keywordView.add(keywordView);
+		LL_keyword_list.addView(keywordView);
+	}
+	
+	void updateCheckedKeyword() {
+		AL_keywordSelected.clear();
+		
+		for (KeywordView keywordView : AL_keywordView) {
+			if (keywordView.isChecked())
+				AL_keywordSelected.add(keywordView.getText());
+		}
+		updateKeyword();
+	}
+	
 	
 	// ========================================================================================= Add message
 	

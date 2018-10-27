@@ -83,6 +83,10 @@ public class KeywordView extends RelativeLayout {
 		TV_textview.setText(msg);
 	}
 	
+	public String getText(){
+		return TV_textview.getText().toString();
+	}
+	
 	// =========================================================================================
 	
 	private OnEventListener onEventListener = null;
