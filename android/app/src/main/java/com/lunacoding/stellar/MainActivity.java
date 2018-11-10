@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -39,27 +38,11 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 	
-	Intent recognizerIntent;
-	SpeechRecognizer mRecognizer;
-	
-	TextToSpeech tts;
-	
 	ScrollView SV_scrollView;
 	LinearLayout LL_list;
 	LinearLayout LL_keyword_list;
 	View V_button;
 	ImageView[] IVs_status;
-	
-	
-	final int WAITING = 0;
-	final int START = 1;
-	final int LISTNING = 2;
-	
-	
-	FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-	private DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
-	
-	Map<String, Command> mapData;
 	
 	void initVar() {
 		SV_scrollView = findViewById(R.id.SV_scrollView);
@@ -75,9 +58,26 @@ public class MainActivity extends AppCompatActivity {
 		for (ImageView v : IVs_status)
 			v.setAlpha(0);
 		IVs_status[0].setAlpha(1);
-		
-		mapData = new HashMap<>();
 	}
+	
+	// =========================================================================================
+	
+	Intent recognizerIntent;
+	SpeechRecognizer mRecognizer;
+	TextToSpeech tts;
+	
+	final int WAITING = 0;
+	final int START = 1;
+	final int LISTNING = 2;
+	
+	// firebase
+	FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+	DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
+	
+	//
+	Map<String, Command> mapData = new HashMap<>();
+	ArrayList<String> waitingKeys = new ArrayList<>();
+	
 	
 	// ========================================================================================= Start
 	
@@ -171,11 +171,21 @@ public class MainActivity extends AppCompatActivity {
 									break;
 								case MODIFIED:
 									command = new Command(key, document);
-									
+									Command oldCommand = mapData.get(key);
 									mapData.put(key, command);
 									log("Modified: " + key);
 									log(command.toString());
 									updateKeyword();
+									
+									if (command.responseTimestamp.getSeconds() != oldCommand.responseTimestamp.getSeconds()) {
+										for (String waitingKey : waitingKeys) {
+											if (waitingKey.equals(key)) {
+												addOutputMessage(command.response);
+												waitingKeys.remove(key);
+											}
+										}
+									}
+									
 									break;
 								case REMOVED:
 									command = new Command(key, document);
@@ -284,23 +294,8 @@ public class MainActivity extends AppCompatActivity {
 				firebase.child("queue").push().setValue(command.command);
 			} else {
 				addOutputMessage("잠시만 기다려주세요...");
-				
-				firestore.collection("command").document(command.key)
-					.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-						@Override
-						public void onEvent(@javax.annotation.Nullable DocumentSnapshot snapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-							if (e != null) {
-								log("Listen failed." + e);
-								return;
-							}
-							
-							if (snapshot != null && snapshot.exists()) {
-								log("Current data: " + snapshot.getData());
-							} else {
-								log("Current data: null");
-							}
-						}
-					});
+				firebase.child("queue").push().setValue(command.command);
+				waitingKeys.add(command.key);
 			}
 		} else
 			addOutputMessage("알아듣지 못했어요 ㅠㅠ");
@@ -372,7 +367,6 @@ public class MainActivity extends AppCompatActivity {
 			}
 			
 			if (doit) {
-				
 				int num = 0;
 				for (String keyword : command.keyword) {
 					boolean found = false;
