@@ -1,7 +1,11 @@
 package com.lunacoding.stellar;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.service.voice.AlwaysOnHotwordDetector;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -109,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	void start() {
+		//startService(new Intent(MainActivity.this, HotwordService.class));
+		//bindService(new Intent(MainActivity.this, HotwordService.class), sconn, BIND_AUTO_CREATE);
+		
 		tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
 			@Override
 			public void onInit(int status) {
@@ -207,6 +214,45 @@ public class MainActivity extends AppCompatActivity {
 			});
 		
 	}
+	
+	HotwordService mService;
+	ServiceConnection sconn = new ServiceConnection() {
+		@Override //서비스가 실행될 때 호출
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			mService = ((HotwordService.MyBinder) service).getService();
+			mService.setOnHotwordListener(new HotwordService.OnHotwordListener() {
+				@Override
+				public void onRecognitionResumed() {
+				
+				}
+				
+				@Override
+				public void onRecognitionPaused() {
+				
+				}
+				
+				@Override
+				public void onError() {
+				
+				}
+				
+				@Override
+				public void onDetected(AlwaysOnHotwordDetector.EventPayload eventPayload) {
+					startVoice();
+				}
+				
+				@Override
+				public void onAvailabilityChanged(int status) {
+				
+				}
+			});
+		}
+		
+		@Override //서비스가 종료될 때 호출
+		public void onServiceDisconnected(ComponentName name) {
+			mService = null;
+		}
+	};
 	
 	// ========================================================================================= Recognition
 	
