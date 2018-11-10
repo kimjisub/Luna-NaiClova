@@ -164,19 +164,18 @@ public class MainActivity extends AppCompatActivity {
 							switch (dc.getType()) {
 								case ADDED:
 									command = new Command(key, document);
-									mapData.put(key, command);
 									log("New: " + key);
 									log(command.toString());
+									
+									mapData.put(key, command);
 									updateKeyword();
 									break;
 								case MODIFIED:
 									command = new Command(key, document);
-									Command oldCommand = mapData.get(key);
-									mapData.put(key, command);
 									log("Modified: " + key);
 									log(command.toString());
-									updateKeyword();
 									
+									Command oldCommand = mapData.get(key);
 									if (command.responseTimestamp.getSeconds() != oldCommand.responseTimestamp.getSeconds()) {
 										for (String waitingKey : waitingKeys) {
 											if (waitingKey.equals(key)) {
@@ -186,13 +185,15 @@ public class MainActivity extends AppCompatActivity {
 										}
 									}
 									
+									mapData.put(key, command);
+									updateKeyword();
 									break;
 								case REMOVED:
 									command = new Command(key, document);
-									
-									mapData.remove(key);
 									log("Removed: " + key);
 									log(command.toString());
+									
+									mapData.remove(key);
 									updateKeyword();
 									break;
 							}
