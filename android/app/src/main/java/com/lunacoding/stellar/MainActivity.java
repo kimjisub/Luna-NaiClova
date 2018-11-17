@@ -506,9 +506,7 @@ public class MainActivity extends AppCompatActivity {
 		});
 	}
 	
-	
 	// =========================================================================================
-	
 	
 	void tts(String msg) {
 		String utteranceId = this.hashCode() + "";
