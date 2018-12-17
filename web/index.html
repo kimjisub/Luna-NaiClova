@@ -1,0 +1,413 @@
+<html>
+<head>
+    <title>STEALLAR</title>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:700" rel="stylesheet">
+    
+    <script src="./leap-0.6.4.js"></script>
+    <script src="./lib/leap-plugins-0.1.6.js"></script>
+    <script src="./lib/three.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>    
+    <script>
+        function showPopup() {
+            a = window.open("./asdf.html", "a", "width=400, height=300, left=100, top=50");
+            setTimeout(function() {
+                window.close();
+            }, 3000);
+            return false;
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from {background-color:rgba(0, 0, 0, 0.2);}
+            to {background-color:rgba(235, 235, 235, 1);}
+        }
+        @keyframes fadeOut {
+            from {background-color:rgba(235, 235, 235, 1);}
+            to {background-color:rgba(235, 235, 235, 0.2);}
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Ubuntu', sans-serif;
+            background-color: black;
+            color: white;
+        }
+        #handVisualizer{
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 10;
+            background: #b4e391;
+        }
+        #rendererDiv{
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            min-width: 250px;
+            min-height: 250px;
+            border: 1px solid black;
+            background-color: #ebebeb;
+        }
+        canvas {
+            z-index: 1000;
+        }
+        #main_menu{
+            position: fixed;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: #b4e391;
+            background: -moz-linear-gradient(top, #b4e391 0%, #61c419 50%, #b4e391 100%); /* FF3.6-15 */
+            background: -webkit-linear-gradient(top, #b4e391 0%,#61c419 50%,#b4e391 100%); /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom, #b4e391 0%,#61c419 50%,#b4e391 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391', endColorstr='#b4e391',GradientType=0 ); /* IE6-9 */
+        }
+        #main_menu ul{
+            margin:0;
+            padding:0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            z-index: 1000;
+            list-style: none;
+        }
+        #main_menu ul li{
+            height: 10%;
+            color: white;
+            display:flex;
+        }
+        #main_menu ul li a{
+            font-size:1.8em;
+            text-decoration: none;
+            width: 60%;
+            min-width: 500px;
+            display: block;
+            margin: auto;
+            border-radius: 15px;
+            color: white;
+        }
+        #main_menu ul li.hover a{
+            background-color: ebebeb;
+            color: black !important;
+            -webkit-box-shadow: 0px 6px 5px 0px rgba(100,100,100,0.75);
+            -moz-box-shadow: 0px 6px 5px 0px rgba(100,100,100,0.75);
+            box-shadow: 0px 6px 5px 0px rgba(100,100,100,0.75);
+            animation-name: fadeIn;
+            animation-duration: 1s;
+        }
+        .fadeOut{
+            animation-name: fadeOut;
+            animation-duration: 1s;
+        }
+    </style>
+</head>
+<body>
+<div id="handVisualizer">
+    <div id="main_menu">
+        <ul>
+            <li><a href="javascript:showPopup()">Turn on the light 1</a></li>
+            <li><a href="http://google.com">Turn off the light 2</a></li>
+            <li><a href="http://macrumors.com">Turn on the appliance 1</a></li>
+            <li><a href="http://hackaday.com">Turn off the appliance 2</a></li>
+            <li><a href="http://gizmodo.com">Indoor dust</a></li>
+            <li><a href="http://reddit.com">Indoor temperature and humidity</a></li>
+            <!--<li><a href="http://cnn.com">CNN</a></li>
+            <li><a href="http://youtube.com">Youtube</a></li>
+            <li><a href="http://facebook.com">Facebook</a></li>
+            <li><a href="http://twitter.com">Twitter</a></li>
+            <li><a href="http://tedtalks.com">TedTalks</a></li>-->
+        </ul>
+    </div>
+</div>
+</body>
+
+<script>
+    Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+        return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
+    var isFullscreen = false;
+    var main_menu = null;
+    var menu_middle = 0;
+    var controlHandId = 0;
+    var controlHandActive = false;
+    var selectedOption = 0;
+    var lastSelectedOption = 0;
+    var fist = false;
+    var fingersExtended = 0;
+    var goneAway = false;
+    $(function () {
+        main_menu = $('#main_menu ul');
+        menu_middle = Math.ceil($("li", main_menu).length/2);
+        //console.log(menu_middle);
+        $("#rendererDiv").click(function (){
+            isFullscreen = !isFullscreen;
+            if (isFullscreen) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.render(scene, camera);
+            }else{
+                camera.aspect = 1;
+                camera.updateProjectionMatrix();
+                renderer.setSize(250, 250);
+                renderer.render(scene, camera);
+            }
+            console.log("isFullscreen", isFullscreen);
+        });
+    });
+
+    var colors = [0xff0000, 0x00ff00, 0x0000ff];
+    var baseBoneRotation = (new THREE.Quaternion).setFromEuler(
+        new THREE.Euler(Math.PI / 2, 0, 0)
+    );
+
+    Leap.loop({background: true}, {
+        hand: function (hand) {
+            fingersExtended = 0;
+            for(var i = 0; i < 5; i++){
+                fingersExtended += hand.fingers[i].extended;
+            }
+            console.log(fingersExtended);
+            if(!fingersExtended){ fist = true; }else{ fist = false; }
+            controlHandId = hand.id;
+            controlHandActive = true;
+            if(fist){
+                var linkURL = $('li.hover a', main_menu).attr('href');
+                console.log(linkURL, $('li.hover', main_menu));
+                if(linkURL !== undefined && linkURL !== "#" && !goneAway) window.location.href = linkURL;
+                goneAway = true;
+                fingersExtended = 0;
+            }
+            if (fingersExtended == 5) {
+                $('li', main_menu).removeClass("hover").removeClass("fadeIn");
+                selectedOption = hand.palmPosition[1];
+                selectedOption = $("li", main_menu).length - Math.floor(selectedOption.map(100, 400, 0, $("li", main_menu).length));
+                if(selectedOption !== lastSelectedOption){
+                    $('li a', main_menu).css("font-size", "");
+                    $('li:nth-child('+selectedOption+') a', main_menu).addClass("fadeIn").css("font-size", "4em");
+                    $('li:nth-child('+lastSelectedOption+') a', main_menu).addClass("fadeOut");
+                    if($("li", main_menu).length > 8 && selectedOption > 0 && selectedOption < $("li", main_menu).length-1){
+                        $('#main_menu').css("top", (50-(10*selectedOption)-(menu_middle))+"%");
+                        if(selectedOption > 0){ $('li:nth-child('+(selectedOption-1)+') a', main_menu).css("font-size", "3.5em"); }
+                        if(selectedOption > 1){ $('li:nth-child('+(selectedOption-2)+') a', main_menu).css("font-size", "2.5em"); }
+                        if(selectedOption < $("li", main_menu).length){ $('li:nth-child('+(selectedOption+1)+') a', main_menu).css("font-size", "3.5em"); }
+                        if(selectedOption < $("li", main_menu).length-1){ $('li:nth-child('+(selectedOption+2)+') a', main_menu).css("font-size", "2.5em"); }
+                    }
+                }
+                $('li:nth-child('+selectedOption+')', main_menu).addClass("hover");
+            }
+            //console.log(controlHandId, controlHandActive);
+            //console.log(hand.palmNormal, hand.palmPosition, hand.palmVelocity);
+            //hand.palmPosition[0] LEFT RIGHT (x)
+            //hand.palmPosition[1] UP DOWN (z)
+            //hand.palmPosition[1] FORWARD BACKWARD (y)
+            //console.log(hand.palmPosition[0], hand.palmPosition[1]);
+            hand.fingers.forEach(function (finger) {
+
+                // This is the meat of the example - Positioning `the cylinders on every frame:
+                finger.data('boneMeshes').forEach(function(mesh, i){
+                    var bone = finger.bones[i];
+
+                    mesh.position.fromArray(bone.center());
+
+                    mesh.setRotationFromMatrix(
+                        (new THREE.Matrix4).fromArray( bone.matrix() )
+                    );
+
+                    mesh.quaternion.multiply(baseBoneRotation);
+                });
+
+                finger.data('jointMeshes').forEach(function(mesh, i){
+                    var bone = finger.bones[i];
+
+                    if (bone) {
+                        mesh.position.fromArray(bone.prevJoint);
+                    }else{
+                        // special case for the finger tip joint sphere:
+                        bone = finger.bones[i-1];
+                        mesh.position.fromArray(bone.nextJoint);
+                    }
+
+                });
+
+            });
+
+            var armMesh = hand.data('armMesh');
+
+            armMesh.position.fromArray(hand.arm.center());
+
+            armMesh.setRotationFromMatrix(
+                (new THREE.Matrix4).fromArray( hand.arm.matrix() )
+            );
+
+            armMesh.quaternion.multiply(baseBoneRotation);
+
+            armMesh.scale.x = hand.arm.width / 2;
+            armMesh.scale.z = hand.arm.width / 4;
+
+            renderer.render(scene, camera);
+
+        }})
+    // these two LeapJS plugins, handHold and handEntry are available from leapjs-plugins, included above.
+    // handHold provides hand.data
+    // handEntry provides handFound/handLost events.
+        .use('handHold')
+        .use('handEntry')
+        .on('handFound', function(hand){
+
+            hand.fingers.forEach(function (finger) {
+
+                var boneMeshes = [];
+                var jointMeshes = [];
+
+                finger.bones.forEach(function(bone) {
+
+                    // create joints
+
+                    // CylinderGeometry(radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded)
+                    var boneMesh = new THREE.Mesh(
+                        new THREE.CylinderGeometry(5, 5, bone.length),
+                        new THREE.MeshPhongMaterial()
+                    );
+
+                    boneMesh.material.color.setHex(0xffffff);
+                    scene.add(boneMesh);
+                    boneMeshes.push(boneMesh);
+                });
+
+                for (var i = 0; i < finger.bones.length + 1; i++) {
+
+                    var jointMesh = new THREE.Mesh(
+                        new THREE.SphereGeometry(8),
+                        new THREE.MeshPhongMaterial()
+                    );
+
+                    jointMesh.material.color.setHex(0x62c25f);
+                    scene.add(jointMesh);
+                    jointMeshes.push(jointMesh);
+
+                }
+
+
+                finger.data('boneMeshes', boneMeshes);
+                finger.data('jointMeshes', jointMeshes);
+
+            });
+
+            if (hand.arm){ // 2.0.3+ have arm api,
+                // CylinderGeometry(radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded)
+                var armMesh = new THREE.Mesh(
+                    new THREE.CylinderGeometry(1, 1, hand.arm.length, 64),
+                    new THREE.MeshPhongMaterial()
+                );
+
+                armMesh.material.color.setHex(0x62c25f);
+
+                scene.add(armMesh);
+
+                hand.data('armMesh', armMesh);
+
+            }
+
+        })
+        .on('handLost', function(hand){
+            controlHandActive = false;
+            $('li', main_menu).removeClass("hover")
+            $('li a', main_menu).css("font-size", "");
+            $("#main_menu").animate({
+                top: 0
+            }, 100);
+            hand.fingers.forEach(function (finger) {
+
+                var boneMeshes = finger.data('boneMeshes');
+                var jointMeshes = finger.data('jointMeshes');
+
+                boneMeshes.forEach(function(mesh){
+                    scene.remove(mesh);
+                });
+
+                jointMeshes.forEach(function(mesh){
+                    scene.remove(mesh);
+                });
+
+                finger.data({
+                    boneMeshes: null,
+                    boneMeshes: null
+                });
+
+            });
+
+            var armMesh = hand.data('armMesh');
+            scene.remove(armMesh);
+            hand.data('armMesh', null);
+
+            renderer.render(scene, camera);
+
+        })
+        .connect();
+
+    // all units in mm
+    var initScene = function () {
+        window.scene = new THREE.Scene();
+        window.renderer = new THREE.WebGLRenderer({
+            alpha: true
+        });
+
+        window.renderer.setClearColor(0x000000, 0);
+        window.renderer.setSize(250, 250);
+        window.renderer.domElement.id = 'rendererDiv';
+
+        document.getElementById('handVisualizer').appendChild(window.renderer.domElement);
+
+        var directionalLight = new THREE.DirectionalLight( 0xfefef0, 1 );
+        directionalLight.position.set( 0, 0.5, 1 );
+        window.scene.add(directionalLight);
+
+        window.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+        window.camera.position.fromArray([0, 100, 500]);
+        window.camera.lookAt(new THREE.Vector3(0, 160, 0));
+
+        window.addEventListener('resize', function () {
+            return false;//SKIP FOR NOW
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.render(scene, camera);
+
+        }, false);
+
+        scene.add(camera);
+
+
+        var geometry = new THREE.CubeGeometry(30, 45, 10);
+        var material = new THREE.MeshPhongMaterial({color: 0x0000cc});
+        window.cube = new THREE.Mesh(geometry, material);
+        cube.position.set(0,0,0);
+        cube.castShadow = true;
+        cube.receiveShadow = true;
+        //scene.add(cube);
+
+        renderer.render(scene, camera);
+
+    };
+
+    initScene();
+
+    var rotateCube = function(){
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.02;
+        renderer.render(scene, camera);
+
+        window.requestAnimationFrame(rotateCube);
+    };
+
+    rotateCube();
+
+</script>
+</html>

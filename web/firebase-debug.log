@@ -1,0 +1,46 @@
+[debug] [2018-12-17T13:13:00.441Z] ----------------------------------------------------------------------
+[debug] [2018-12-17T13:13:00.443Z] Command:       /usr/bin/node /usr/local/bin/firebase login
+[debug] [2018-12-17T13:13:00.443Z] CLI Version:   6.1.2
+[debug] [2018-12-17T13:13:00.443Z] Platform:      linux
+[debug] [2018-12-17T13:13:00.443Z] Node Version:  v8.10.0
+[debug] [2018-12-17T13:13:00.443Z] Time:          Mon Dec 17 2018 13:13:00 GMT+0000 (UTC)
+[debug] [2018-12-17T13:13:00.443Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+[info] Visit this URL on any device to log in:
+[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=927555756&redirect_uri=http%3A%2F%2Flocalhost%3A9005
+[info] 
+[info] Waiting for authentication...
+[debug] [2018-12-17T13:13:03.668Z] Unable to open URL: Error: Exited with code 3
+    at ChildProcess.cp.once.code (/usr/local/lib/node_modules/firebase-tools/node_modules/opn/index.js:84:13)
+    at Object.onceWrapper (events.js:317:30)
+    at emitTwo (events.js:126:13)
+    at ChildProcess.emit (events.js:214:7)
+    at maybeClose (internal/child_process.js:925:16)
+    at Socket.stream.socket.on (internal/child_process.js:346:11)
+    at emitOne (events.js:116:13)
+    at Socket.emit (events.js:211:7)
+    at Pipe._handle.close [as _onclose] (net.js:567:12)
+[debug] [2018-12-17T13:14:08.588Z] ----------------------------------------------------------------------
+[debug] [2018-12-17T13:14:08.591Z] Command:       /usr/bin/node /usr/local/bin/firebase login
+[debug] [2018-12-17T13:14:08.591Z] CLI Version:   6.1.2
+[debug] [2018-12-17T13:14:08.591Z] Platform:      linux
+[debug] [2018-12-17T13:14:08.591Z] Node Version:  v8.10.0
+[debug] [2018-12-17T13:14:08.591Z] Time:          Mon Dec 17 2018 13:14:08 GMT+0000 (UTC)
+[debug] [2018-12-17T13:14:08.591Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+[info] Visit this URL on any device to log in:
+[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=137716832&redirect_uri=http%3A%2F%2Flocalhost%3A9005
+[info] 
+[info] Waiting for authentication...
+[debug] [2018-12-17T13:14:09.935Z] Unable to open URL: Error: Exited with code 3
+    at ChildProcess.cp.once.code (/usr/local/lib/node_modules/firebase-tools/node_modules/opn/index.js:84:13)
+    at Object.onceWrapper (events.js:317:30)
+    at emitTwo (events.js:126:13)
+    at ChildProcess.emit (events.js:214:7)
+    at maybeClose (internal/child_process.js:925:16)
+    at Socket.stream.socket.on (internal/child_process.js:346:11)
+    at emitOne (events.js:116:13)
+    at Socket.emit (events.js:211:7)
+    at Pipe._handle.close [as _onclose] (net.js:567:12)
