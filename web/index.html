@@ -14,9 +14,16 @@
         function showPopup() {
             a = window.open("asdf.html", "a", "width=400, height=300, left=100, top=50");
             setTimeout(function() {
-                window.close();
+                a.close();
             }, 3000);
             return false;
+        }
+    </script>
+    <script>
+        const http = new XMLHttpRequest();
+        function command(command){
+            http.open("GET", "https://us-central1-luna-ai-secretary.cloudfunctions.net/addInQueue/"+command);
+            http.send();
         }
     </script>
     <style>
@@ -110,8 +117,8 @@
 <div id="handVisualizer">
     <div id="main_menu">
         <ul>
-            <li><a href="javascript:showPopup()">Turn on the light 1</a></li>
-            <li><a href="http://google.com">Turn off the light 2</a></li>
+            <li><a href="javascript:command('light1on'); showPopup()">Turn on the light 1</a></li>
+            <li><a href="javascript:command('light1off')">Turn off the light 2</a></li>
             <li><a href="http://macrumors.com">Turn on the appliance 1</a></li>
             <li><a href="http://hackaday.com">Turn off the appliance 2</a></li>
             <li><a href="http://gizmodo.com">Indoor dust</a></li>
