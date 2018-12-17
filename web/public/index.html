@@ -9,21 +9,21 @@
     <script
             src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"></script>    
+            crossorigin="anonymous"></script>
     <script>
-        function showPopup() {
-            a = window.open("asdf.html", "a", "width=400, height=300, left=100, top=50");
-            setTimeout(function() {
-                a.close();
-            }, 3000);
-            return false;
-        }
-    </script>
-    <script>
-        const http = new XMLHttpRequest();
         function command(command){
-            http.open("GET", "https://us-central1-luna-ai-secretary.cloudfunctions.net/addInQueue/"+command);
-            http.send();
+            console.log("command: " + command)
+            const http = new XMLHttpRequest();
+            http.open("GET", "https://us-central1-luna-ai-secretary.cloudfunctions.net/addInQueue/"+command)
+            http.send()
+            //showPopup()
+        }
+
+        function showPopup(){
+            a = window.open("asdf.html", "a", "width=400, height=300, left=100, top=50")
+            setTimeout(function() {
+                a.close()
+            }, 3000)
         }
     </script>
     <style>
@@ -117,17 +117,17 @@
 <div id="handVisualizer">
     <div id="main_menu">
         <ul>
-            <li><a href="javascript:command('light1on'); showPopup()">1번 전등 켜기</a></li>
-            <li><a href="javascript:command('light1off')">1번 전등 끄기</a></li>
-            <li><a href="javascript:command('light2on')">2번 전등 켜기</a></li>
-            <li><a href="javascript:command('light2off')">2번 전등 끄기</a></li>
-            <li><a href="javascript:command('hi')">모든 전등 켜기</a></li>
-            <li><a href="javascript:command('bye')">모든 전등 끄기</a></li>
-            <li><a href="javascript:command('door1open')">문 열기</a></li>
-            <li><a href="javascript:command('door1close')">문 닫기</a></li>
-            <li><a href="javascript:command('dust')">실내 미세먼지 확인</a></li>
-            <li><a href="javascript:command('environment')">실내 온습도 확인</a></li>
-            <li><a href="javascript:command('search1')">등록한 물건 찾기</a></li>
+            <li><a href="command('light1on');">1번 전등 켜기</a></li>
+            <li><a href="command('light1off')">1번 전등 끄기</a></li>
+            <li><a href="command('light2on')">2번 전등 켜기</a></li>
+            <li><a href="command('light2off')">2번 전등 끄기</a></li>
+            <li><a href="command('hi')">모든 전등 켜기</a></li>
+            <li><a href="command('bye')">모든 전등 끄기</a></li>
+            <li><a href="command('door1open')">문 열기</a></li>
+            <li><a href="command('door1close')">문 닫기</a></li>
+            <li><a href="command('dust')">실내 미세먼지 확인</a></li>
+            <li><a href="command('environment')">실내 온습도 확인</a></li>
+            <li><a href="command('search1')">등록한 물건 찾기</a></li>
         </ul>
     </div>
 </div>
@@ -145,9 +145,8 @@
     var controlHandActive = false;
     var selectedOption = 0;
     var lastSelectedOption = 0;
-    var fist = false;
     var fingersExtended = 0;
-    var goneAway = false;
+    var prevExecute = 0;
     $(function () {
         main_menu = $('#main_menu ul');
         menu_middle = Math.ceil($("li", main_menu).length/2);
@@ -180,16 +179,17 @@
             for(var i = 0; i < 5; i++){
                 fingersExtended += hand.fingers[i].extended;
             }
-            console.log(fingersExtended);
-            if(!fingersExtended){ fist = true; }else{ fist = false; }
+            console.log("fingersExtended: " + fingersExtended);
             controlHandId = hand.id;
             controlHandActive = true;
-            if(fist){
+            if(fingersExtended == 0){
                 var linkURL = $('li.hover a', main_menu).attr('href');
-                console.log(linkURL, $('li.hover', main_menu));
-                if(linkURL !== undefined && linkURL !== "#" && !goneAway) window.location.href = linkURL;
-                goneAway = true;
-                fingersExtended = 0;
+                var currExecute = Date.now();
+                var cooltime = currExecute - prevExecute;
+                if(linkURL !== undefined && linkURL !== "#" && cooltime >= 3000){
+                    (new Function (linkURL))();
+                    prevExecute = currExecute;
+                }
             }
             if (fingersExtended == 5) {
                 $('li', main_menu).removeClass("hover").removeClass("fadeIn");
