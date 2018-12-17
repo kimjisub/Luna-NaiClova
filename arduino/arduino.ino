@@ -5,15 +5,20 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <Servo.h>
+#include "DHT.h"
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
 #define NUMPIXELS 8
 
-#define FIREBASE_HOST "input_your_url"
-#define FIREBASE_AUTH "input_your_auth"
-#define WIFI_SSID "socialcampuson"
-#define WIFI_PASSWORD "socialcampus2500"
+#define FIREBASE_HOST "url"
+#define FIREBASE_AUTH "auth"
+#define WIFI_SSID "ssid"
+#define WIFI_PASSWORD "passwd"
+#define DHTPIN 10
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
  
 Servo myservo;
 
@@ -124,6 +129,27 @@ void loop() {
     if(ugm3>=100){
       msg += "매우 위험한 수준입니다. 지금 당장 환기하십시요.";
     }
+    String postData = "msg=" + msg;
+
+    http.begin("input_your_post_request_url");
+    http.addHeader("Content-type", "application/x-www-form-urlencoded");
+
+    int httpCode = http.POST(postData);
+    String payload = http.getString();
+    Serial.println(httpCode);
+    Serial.println(payload);
+    http.end();
+    removeData(path);
+  }
+
+  if (data == "environment") {
+    int t = dht.readTemperature;
+    int h = dht.readHumidity;
+    String msg = "현재 실내 온도는 ";
+    msg += t;
+    msg += "도이고, 실내 습도는 ";
+    msg += h;
+    msg += "퍼센트입니다."
     String postData = "msg=" + msg;
 
     http.begin("input_your_post_request_url");
