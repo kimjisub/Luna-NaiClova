@@ -131,7 +131,7 @@ void loop() {
     }
     String postData = "msg=" + msg;
 
-    http.begin("input_your_post_request_url");
+    http.begin("https://us-central1-luna-ai-secretary.cloudfunctions.net/sendResponseMsg/dust");
     http.addHeader("Content-type", "application/x-www-form-urlencoded");
 
     int httpCode = http.POST(postData);
@@ -152,7 +152,7 @@ void loop() {
     msg += "퍼센트입니다."
     String postData = "msg=" + msg;
 
-    http.begin("input_your_post_request_url");
+    http.begin("https://us-central1-luna-ai-secretary.cloudfunctions.net/sendResponseMsg/environment");
     http.addHeader("Content-type", "application/x-www-form-urlencoded");
 
     int httpCode = http.POST(postData);
