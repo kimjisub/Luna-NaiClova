@@ -23,11 +23,10 @@
         }
 
         function success(){
-            /*a = window.open("asdf.html", "a", "width=400, height=300, left=100, top=50")
+            a = window.open("asdf.html", "a", "width=400, height=300, left=100, top=50")
             setTimeout(function() {
                 a.close();
-            }, 3000)*/
-            show();
+            }, 3000)
             let msg = new SpeechSynthesisUtterance('성공적');
             msg.lang = 'ko-KR';
             speechSynthesis.speak(msg);
@@ -163,18 +162,14 @@
                 <li><a onclick="command('light2off')">2번 전등 끄기</a></li>
                 <li><a onclick="command('hi')">모든 전등 켜기</a></li>
                 <li><a onclick="command('bye')">모든 전등 끄기</a></li>
-                <li><a onclick="command('door1open')">문 열기</a></li>
-                <li><a onclick="command('door1close')">문 닫기</a></li>
                 <li><a onclick="command('dust')">실내 미세먼지 확인</a></li>
                 <li><a onclick="command('environment')">실내 온습도 확인</a></li>
-                <li><a onclick="command('search1')">등록한 물건 찾기</a></li>
             </ul>
         </div>
         <div id="myModal" class="modal">
      
                 <!-- Modal content -->
-            <div class="modal-content">
-              <span class="close">&times;</span>                                                               
+            <div class="modal-content">                                                               
               <p>Some text in the Modal..</p>
             </div>
         
