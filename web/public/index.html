@@ -14,16 +14,20 @@
         function command(command){
             console.log("command: " + command);
             const http = new XMLHttpRequest();
-            http.open("GET", "https://us-central1-luna-ai-secretary.cloudfunctions.net/addInQueue/"+command)
-            http.send()
-            showPopup()
+            http.open("GET", "https://us-central1-luna-ai-secretary.cloudfunctions.net/addInQueue/"+command);
+            http.send();
+            success();
         }
 
-        function showPopup(){
+        function success(){
             a = window.open("asdf.html", "a", "width=400, height=300, left=100, top=50")
             setTimeout(function() {
-                a.close()
+                a.close();
             }, 3000)
+            let msg = new SpeechSynthesisUtterance('성공적');
+            msg.lang = 'ko-KR';
+            speechSynthesis.speak(msg);
+            console.log('command success');
         }
     </script>
     <style>
