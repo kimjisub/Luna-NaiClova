@@ -6,6 +6,9 @@
     <script src="./leap-0.6.4.js"></script>
     <script src="./lib/leap-plugins-0.1.6.js"></script>
     <script src="./lib/three.js"></script>
+    <script src="https://unpkg.com/three"></script>
+    <script src="https://unpkg.com/three.texttexture"></script>
+    <script src="https://unpkg.com/three.textsprite"></script>
     <script
             src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -150,6 +153,7 @@
     var selectedOption = 0;
     var lastSelectedOption = 0;
     var fingersExtended = 0;
+    var fingersExtendedLog;
     var prevExecute = 0;
     $(function () {
         main_menu = $('#main_menu ul');
@@ -184,7 +188,7 @@
                 fingersExtended += hand.fingers[i].extended;
             }
             console.log("fingersExtended: " + fingersExtended);
-            $('fingersExtended').text(fingersExtended)
+            fingersExtendedLog.material.map.text = fingersExtended + "";
 
             controlHandId = hand.id;
             controlHandActive = true;
@@ -406,10 +410,15 @@
         cube.receiveShadow = true;
         //scene.add(cube);
 
-        var textShapes = THREE.FontUtils.generateShapes(text, {})
-        var text = new THREE.ShapeGeometry(textShapes)
-        var textMesh = new THREE.Mesh(text, new THREE.MeshBasicMaterial({color: 0xff0000 }))
-        scene.add(textMesh);
+       fingersExtendedLog = new THREE.TextSprite({
+            textSize: 40,
+            texture: {
+                text: 'Hello World!',
+                fontFamily: 'Arial, Helvetica, sans-serif',
+            },
+            material: {color: 0x000000},
+        });
+        scene.add(fingersExtendedLog);
 
         renderer.render(scene, camera);
 
