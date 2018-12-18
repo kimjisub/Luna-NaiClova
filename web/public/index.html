@@ -58,15 +58,6 @@
             border: 1px solid black;
             background-color: #ebebeb;
         }
-        #fingersExtended{
-            position: fixed;
-            top: 0;
-            right: 0;
-            min-width: 250px;
-            min-height: 250px;
-            border: 1px solid black;
-            background-color: #ebebeb;
-        }
         canvas {
             z-index: 1000;
         }
@@ -126,20 +117,19 @@
 <div id="handVisualizer">
     <div id="main_menu">
         <ul>
-            <li><a href="command('light1on');">1번 전등 켜기</a></li>
-            <li><a href="command('light1off')">1번 전등 끄기</a></li>
-            <li><a href="command('light2on')">2번 전등 켜기</a></li>
-            <li><a href="command('light2off')">2번 전등 끄기</a></li>
-            <li><a href="command('hi')">모든 전등 켜기</a></li>
-            <li><a href="command('bye')">모든 전등 끄기</a></li>
-            <li><a href="command('door1open')">문 열기</a></li>
-            <li><a href="command('door1close')">문 닫기</a></li>
-            <li><a href="command('dust')">실내 미세먼지 확인</a></li>
-            <li><a href="command('environment')">실내 온습도 확인</a></li>
-            <li><a href="command('search1')">등록한 물건 찾기</a></li>
+            <li><a onclick="command('light1on');">1번 전등 켜기</a></li>
+            <li><a onclick="command('light1off')">1번 전등 끄기</a></li>
+            <li><a onclick="command('light2on')">2번 전등 켜기</a></li>
+            <li><a onclick="command('light2off')">2번 전등 끄기</a></li>
+            <li><a onclick="command('hi')">모든 전등 켜기</a></li>
+            <li><a onclick="command('bye')">모든 전등 끄기</a></li>
+            <li><a onclick="command('door1open')">문 열기</a></li>
+            <li><a onclick="command('door1close')">문 닫기</a></li>
+            <li><a onclick="command('dust')">실내 미세먼지 확인</a></li>
+            <li><a onclick="command('environment')">실내 온습도 확인</a></li>
+            <li><a onclick="command('search1')">등록한 물건 찾기</a></li>
         </ul>
     </div>
-    <div id="fingersExtended"></div>
 </div>
 </body>
 
@@ -195,7 +185,7 @@
             controlHandId = hand.id;
             controlHandActive = true;
             if(fingersExtended == 0){
-                var linkURL = $('li.hover a', main_menu).attr('href');
+                var linkURL = $('li.hover a', main_menu).attr('onclick');
                 var currExecute = Date.now();
                 var cooltime = currExecute - prevExecute;
                 if(linkURL !== undefined && linkURL !== "#" && cooltime >= 3000){
