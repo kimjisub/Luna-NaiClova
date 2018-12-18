@@ -12,11 +12,19 @@
             crossorigin="anonymous"></script>
     <script>
         function command(command){
-            console.log("command: " + command)
+            console.log("command: " + command);
             const http = new XMLHttpRequest();
-            http.open("GET", "https://us-central1-luna-ai-secretary.cloudfunctions.net/addInQueue/"+command)
-            http.send()
+            http.open("GET", "https://us-central1-luna-ai-secretary.cloudfunctions.net/addInQueue/"+command);
+            http.send();
             //showPopup()
+            success();
+        }
+
+        function success() {
+            let msg = new SpeechSynthesisUtterance('성공적');
+            msg.lang = 'ko-KR';
+            speechSynthesis.speak(msg);
+            console.log("voice");
         }
 
         function showPopup(){
