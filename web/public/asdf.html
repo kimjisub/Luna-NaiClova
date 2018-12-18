@@ -5,21 +5,105 @@
     <title>asdf</title>
 </head>
 <body>
-    <script>
-        var synth = window.speechSynthesis;
+    <h1>Speech synthesiser</h1>
 
-        var voices = [];
+    <p>Enter some text in the input below and press return  or the "play" button to hear it. change voices using the dropdown menu.</p>
+    
+    <form>
+    <input type="text" class="txt">
+    <div>
+      <label for="rate">Rate</label><input type="range" min="0.5" max="2" value="1" step="0.1" id="rate">
+      <div class="rate-value">1</div>
+      <div class="clearfix"></div>
+    </div>
+    <div>
+      <label for="pitch">Pitch</label><input type="range" min="0" max="2" value="1" step="0.1" id="pitch">
+      <div class="pitch-value">1</div>
+      <div class="clearfix"></div>
+    </div>
+    <select>
 
-        function populateVoiceList() {
-            voices = synth.getVoices().sort(function (a,b) {
-                const aname = a.name.toUpperCase(), bname = b.name.toUpperCase();
-                if( aname < bname) return -1;
-                else if ( aname == bname ) return 0;
-                else return +1;
-            });
-
+    </select>
+    <div class="controls">
+      <button id="play" type="submit">Play</button>
+    </div>
+    </form>
+    <style>
+        body, html {
+            margin: 0;
         }
-    </script>
-    <h1>냠냠</h1>
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1, p {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .txt, select, form > div {
+            display: block;
+            margin: 0 auto;
+            font-family: sans-serif;
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        .txt {
+            width: 80%;
+        }
+
+        select {
+            width: 83%;
+        }
+
+        form > div {
+            width: 81%;
+        }
+
+        .txt, form > div {
+            margin-bottom: 10px;
+            overflow: auto;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+
+        label {
+            float: left;
+            width: 10%;
+            line-height: 1.5;
+        }
+
+        .rate-value, .pitch-value {
+            float: right;
+            width: 5%;
+            line-height: 1.5;
+        }
+
+        #rate, #pitch {
+            float: right;
+            width: 81%;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .controls button {
+            padding: 10px;
+        }
+    </style>
+    <script src="asdf.js"></script>
 </body>
 </html>
