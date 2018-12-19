@@ -33,7 +33,7 @@
             height: 100%;
             position: relative;
             z-index: 10;
-            background: #654ea3;
+            background-image: linear-gradient(#654ea3 50%, #eaafc8 50%);
         }
         #rendererDiv{
             position: fixed;
@@ -41,8 +41,9 @@
             right: 0;
             min-width: 250px;
             min-height: 250px;
-            border: 1px solid black;
+            border: 1px solid #9c9898;
             background-color: #ebebeb;
+            border-top-left-radius: 20px;
         }
         canvas {
             z-index: 1000;
@@ -113,6 +114,7 @@
         
         /* Modal Content/Box */
         .modal-content {
+            color: black;
             background-color: #fefefe;
             margin: 15% auto; /* 15% from the top and centered */
             padding: 20px;
@@ -134,6 +136,8 @@
                 <li><a onclick="command('bye')">모든 전등 끄기</a></li>
                 <li><a onclick="command('dust')">실내 미세먼지 확인</a></li>
                 <li><a onclick="command('environment')">실내 온습도 확인</a></li>
+                <li><a onclick="command('electon')">전자 제품 켜기</a></li>
+                <li><a onclick="command('electoff')">전자 제품 끄기</a></li>
             </ul>
         </div>
     </div>
@@ -142,7 +146,7 @@
         <!-- Modal content -->
         <div class="modal-content">
             <span class="close">&times;</span>                                                               
-            <p>Some text in the Modal..</p>
+            <p>성공적으로 명령을 실행했습니다.</p>
         </div>
     </div>
 </body>
@@ -163,7 +167,7 @@
             a.close();
         }, 3000)*/
         show();
-        let msg = new SpeechSynthesisUtterance('성공적');
+        let msg = new SpeechSynthesisUtterance('성공적으로 명령을 실행했습니다.');
         msg.lang = 'ko-KR';
         speechSynthesis.speak(msg);
         console.log('command success');
