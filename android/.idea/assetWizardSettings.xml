@@ -23,7 +23,8 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="48" />
+                                                <entry key="scalingPercent" value="149" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -33,9 +34,7 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundColor" value="e5e9eb" />
-                                      <entry key="foregroundImage" value="$USER_HOME$/Downloads/KakaoTalk_Photo_2018-11-11-04-45-06.png" />
+                                      <entry key="foregroundImage" value="$USER_HOME$/Downloads/KakaoTalk_Photo_2018-12-21-07-39-03.png" />
                                     </map>
                                   </option>
                                 </PersistentState>
