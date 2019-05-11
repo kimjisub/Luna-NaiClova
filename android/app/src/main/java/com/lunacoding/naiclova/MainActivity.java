@@ -1,6 +1,7 @@
 package com.lunacoding.naiclova;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -9,10 +10,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.service.voice.AlwaysOnHotwordDetector;
-import android.speech.RecognitionListener;
-import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,11 +22,8 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.lunacoding.naiclova.databinding.ActivityMainBinding;
@@ -247,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
 	// ========================================================================================= Recognition
 
 	void sendMsg(String msg) {
-		addInputMessage(msg);
 
 		boolean found = false;
 		Command command = null;
@@ -417,6 +411,33 @@ public class MainActivity extends AppCompatActivity {
 
 	// ========================================================================================= Add message
 
+	static class MessageViewer {
+		enum Type {IN, OUT}
+
+		Context context;
+		LinearLayout parent;
+		LinearLayout view;
+		TextView textView;
+
+		Type type;
+		String message;
+
+		public MessageViewer(Context context, LinearLayout parent, Type type) {
+			this.context = context;
+			this.parent = parent;
+			this.type = type;
+
+			view = (LinearLayout) View.inflate(context, type == Type.IN ? R.layout.message_in : R.layout.message_out, null);
+			textView = view.findViewById(R.id.textview);
+			parent.addView(view);
+		}
+
+		void changeText(String message) {
+			this.message = message;
+			textView.setText(message);
+		}
+	}
+
 	void addInputMessage(String msg) {
 		LinearLayout linearLayout = (LinearLayout) View.inflate(MainActivity.this, R.layout.message_in, null);
 		((TextView) linearLayout.findViewById(R.id.textview)).setText(msg);
@@ -469,6 +490,8 @@ public class MainActivity extends AppCompatActivity {
 		return true;
 	}
 
+	MessageViewer messageViewer;
+
 	private void handleMessage(Message msg) {
 		switch (msg.what) {
 			case R.id.clientReady:
@@ -478,6 +501,8 @@ public class MainActivity extends AppCompatActivity {
 				writer.open("Test");
 
 				changeStatus(START);
+
+				messageViewer = new MessageViewer(MainActivity.this, b.LLList, MessageViewer.Type.IN);
 				break;
 
 			case R.id.audioRecording:
@@ -492,7 +517,7 @@ public class MainActivity extends AppCompatActivity {
 				mResult = (String) (msg.obj);
 				log(mResult);
 
-
+				messageViewer.changeText(mResult);
 				changeStatus(LISTENING);
 				break;
 
@@ -505,6 +530,7 @@ public class MainActivity extends AppCompatActivity {
 				String result = results.get(0);
 
 				log("onResults: " + result);
+				messageViewer.changeText(mResult);
 				sendMsg(result);
 				break;
 
