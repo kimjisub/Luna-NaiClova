@@ -123,12 +123,9 @@ public class MainActivity extends AppCompatActivity {
 		//startService(new Intent(MainActivity.this, HotwordService.class));
 		//bindService(new Intent(MainActivity.this, HotwordService.class), sconn, BIND_AUTO_CREATE);
 
-		tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-			@Override
-			public void onInit(int status) {
-				if (status != TextToSpeech.ERROR) {
-					tts.setLanguage(Locale.KOREAN);
-				}
+		tts = new TextToSpeech(getApplicationContext(), status -> {
+			if (status != TextToSpeech.ERROR) {
+				tts.setLanguage(Locale.KOREAN);
 			}
 		});
 
@@ -149,64 +146,61 @@ public class MainActivity extends AppCompatActivity {
 
 
 		firestore.collection("command")
-				.addSnapshotListener(new EventListener<QuerySnapshot>() {
-					@Override
-					public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
-						if (e != null) {
-							log("listen:error" + e);
-							return;
-						}
+				.addSnapshotListener((snapshots, e) -> {
+					if (e != null) {
+						log("listen:error" + e);
+						return;
+					}
 
-						for (DocumentChange dc : snapshots.getDocumentChanges()) {
-							QueryDocumentSnapshot document = dc.getDocument();
+					for (DocumentChange dc : snapshots.getDocumentChanges()) {
+						QueryDocumentSnapshot document = dc.getDocument();
 
-							String key = document.getId();
+						String key = document.getId();
 
-							try {
-								Command command;
-								switch (dc.getType()) {
-									case ADDED:
-										command = new Command(key, document);
-										log("New: " + key);
-										log(command.toString());
+						try {
+							Command command;
+							switch (dc.getType()) {
+								case ADDED:
+									command = new Command(key, document);
+									log("New: " + key);
+									log(command.toString());
 
-										mapData.put(key, command);
-										updateKeyword();
-										break;
-									case MODIFIED:
-										command = new Command(key, document);
-										log("Modified: " + key);
-										log(command.toString());
+									mapData.put(key, command);
+									updateKeyword();
+									break;
+								case MODIFIED:
+									command = new Command(key, document);
+									log("Modified: " + key);
+									log(command.toString());
 
-										Command oldCommand = mapData.get(key);
-										if (command.responseTimestamp.getSeconds() != oldCommand.responseTimestamp.getSeconds()) {
-											for (String waitingKey : waitingKeys) {
-												if (waitingKey.equals(key)) {
-													addOutputMessage(command.response);
-													waitingKeys.remove(key);
-												}
+									Command oldCommand = mapData.get(key);
+									if (command.responseTimestamp.getSeconds() != oldCommand.responseTimestamp.getSeconds()) {
+										for (String waitingKey : waitingKeys) {
+											if (waitingKey.equals(key)) {
+												addOutputMessage(command.response);
+												waitingKeys.remove(key);
 											}
 										}
+									}
 
-										mapData.put(key, command);
-										updateKeyword();
-										break;
-									case REMOVED:
-										command = new Command(key, document);
-										log("Removed: " + key);
-										log(command.toString());
+									mapData.put(key, command);
+									updateKeyword();
+									break;
+								case REMOVED:
+									command = new Command(key, document);
+									log("Removed: " + key);
+									log(command.toString());
 
-										mapData.remove(key);
-										updateKeyword();
-										break;
-								}
-							} catch (Exception e1) {
-								log("error: " + key);
-								e1.printStackTrace();
+									mapData.remove(key);
+									updateKeyword();
+									break;
 							}
+						} catch (Exception e1) {
+							log("error: " + key);
+							e1.printStackTrace();
 						}
-
 					}
+
 				});
 
 	}
@@ -251,63 +245,6 @@ public class MainActivity extends AppCompatActivity {
 	};
 
 	// ========================================================================================= Recognition
-
-	private RecognitionListener recognitionListener = new RecognitionListener() {
-		@Override
-		public void onReadyForSpeech(Bundle bundle) {
-			log("onReadyForSpeech");
-			changeStatus(START);
-		}
-
-		@Override
-		public void onBeginningOfSpeech() {
-			log("onBeginningOfSpeech");
-			changeStatus(LISTENING);
-		}
-
-		@Override
-		public void onRmsChanged(float v) {
-			log("onRmsChanged " + v);
-		}
-
-		@Override
-		public void onBufferReceived(byte[] bytes) {
-			log("onBufferReceived " + bytes);
-		}
-
-		@Override
-		public void onEndOfSpeech() {
-			log("onEndOfSpeech");
-			changeStatus(WAITING);
-		}
-
-		@Override
-		public void onError(int i) {
-			//log("onError " + i);
-		}
-
-		@Override
-		public void onResults(Bundle bundle) {
-			ArrayList<String> mResult = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
-			String[] rs = new String[mResult.size()];
-			mResult.toArray(rs);
-			String msg = rs[0];
-
-			log("onResults: " + msg);
-			sendMsg(msg);
-		}
-
-		@Override
-		public void onPartialResults(Bundle bundle) {
-			log("onPartialResults");
-		}
-
-		@Override
-		public void onEvent(int i, Bundle bundle) {
-			log("onEvent");
-		}
-	};
 
 	void sendMsg(String msg) {
 		addInputMessage(msg);
@@ -494,12 +431,7 @@ public class MainActivity extends AppCompatActivity {
 		tts(msg);
 
 		b.LLList.addView(linearLayout);
-		b.SVScrollView.post(new Runnable() {
-			@Override
-			public void run() {
-				b.SVScrollView.smoothScrollBy(0, 10000);
-			}
-		});
+		b.SVScrollView.post(() -> b.SVScrollView.smoothScrollBy(0, 10000));
 	}
 
 	// =========================================================================================
@@ -511,16 +443,8 @@ public class MainActivity extends AppCompatActivity {
 
 	void startVoice() {
 		if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-			// Start button is pushed when SpeechRecognizer's state is inactive.
-			// Run SpeechRecongizer by calling recognize().
-			/*mResult = "";
-			txtResult.setText("Connecting...");
-			btnStart.setText(R.string.str_stop);*/
 			naverRecognizer.recognize();
 		} else {
-			/*Log.d(TAG, "stop and wait Final Result");
-			btnStart.setEnabled(false);*/
-
 			naverRecognizer.getSpeechRecognizer().stop();
 		}
 	}
