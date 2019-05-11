@@ -1,4 +1,4 @@
-package com.lunacoding.stellar.recognizer;
+package com.lunacoding.naiclova.recognizer;
 
 import android.content.Context;
 import android.os.Handler;
@@ -6,7 +6,7 @@ import android.os.Message;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
-import com.lunacoding.stellar.R;
+import com.lunacoding.naiclova.R;
 import com.naver.speech.clientapi.SpeechConfig;
 import com.naver.speech.clientapi.SpeechRecognitionException;
 import com.naver.speech.clientapi.SpeechRecognitionListener;

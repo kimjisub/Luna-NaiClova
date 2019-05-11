@@ -1,7 +1,6 @@
-package com.lunacoding.stellar;
+package com.lunacoding.naiclova;
 
 import android.content.ComponentName;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.service.voice.AlwaysOnHotwordDetector;
 import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
@@ -21,7 +19,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
@@ -34,11 +31,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
-import com.lunacoding.stellar.databinding.ActivityMainBinding;
-import com.lunacoding.stellar.firestore.Command;
-import com.lunacoding.stellar.recognizer.AudioWriterPCM;
-import com.lunacoding.stellar.recognizer.NaverRecognizer;
-import com.lunacoding.stellar.view.KeywordView;
+import com.lunacoding.naiclova.databinding.ActivityMainBinding;
+import com.lunacoding.naiclova.firestore.Command;
+import com.lunacoding.naiclova.recognizer.AudioWriterPCM;
+import com.lunacoding.naiclova.recognizer.NaverRecognizer;
+import com.lunacoding.naiclova.view.KeywordView;
 import com.naver.speech.clientapi.SpeechRecognitionResult;
 
 import java.lang.ref.WeakReference;
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
 	final int WAITING = 0;
 	final int START = 1;
-	final int LISTNING = 2;
+	final int LISTENING = 2;
 
 	// firebase
 	FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -103,23 +100,23 @@ public class MainActivity extends AppCompatActivity {
 		naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
 		TedPermission.with(this)
-			.setPermissionListener(new PermissionListener() {
-				@Override
-				public void onPermissionGranted() {
-					start();
-				}
+				.setPermissionListener(new PermissionListener() {
+					@Override
+					public void onPermissionGranted() {
+						start();
+					}
 
-				@Override
-				public void onPermissionDenied(List<String> deniedPermissions) {
-					finish();
-				}
+					@Override
+					public void onPermissionDenied(List<String> deniedPermissions) {
+						finish();
+					}
 
 
-			})
-			.setRationaleMessage("음성인식을 위해서 오디오 녹음 권한이 필요합니다.\n해당 권한에 대한 허가를 받습니다.")
-			.setDeniedMessage("오디오 녹음 장치에 액세스해야합니다.\n[설정] > [권한]에서 권한을 켜십시오.")
-			.setPermissions(android.Manifest.permission.RECORD_AUDIO)
-			.check();
+				})
+				.setRationaleMessage("음성인식을 위해서 오디오 녹음 권한이 필요합니다.\n해당 권한에 대한 허가를 받습니다.")
+				.setDeniedMessage("오디오 녹음 장치에 액세스해야합니다.\n[설정] > [권한]에서 권한을 켜십시오.")
+				.setPermissions(android.Manifest.permission.RECORD_AUDIO)
+				.check();
 	}
 
 	void start() {
@@ -152,65 +149,65 @@ public class MainActivity extends AppCompatActivity {
 
 
 		firestore.collection("command")
-			.addSnapshotListener(new EventListener<QuerySnapshot>() {
-				@Override
-				public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
-					if (e != null) {
-						log("listen:error" + e);
-						return;
-					}
+				.addSnapshotListener(new EventListener<QuerySnapshot>() {
+					@Override
+					public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
+						if (e != null) {
+							log("listen:error" + e);
+							return;
+						}
 
-					for (DocumentChange dc : snapshots.getDocumentChanges()) {
-						QueryDocumentSnapshot document = dc.getDocument();
+						for (DocumentChange dc : snapshots.getDocumentChanges()) {
+							QueryDocumentSnapshot document = dc.getDocument();
 
-						String key = document.getId();
+							String key = document.getId();
 
-						try {
-							Command command;
-							switch (dc.getType()) {
-								case ADDED:
-									command = new Command(key, document);
-									log("New: " + key);
-									log(command.toString());
+							try {
+								Command command;
+								switch (dc.getType()) {
+									case ADDED:
+										command = new Command(key, document);
+										log("New: " + key);
+										log(command.toString());
 
-									mapData.put(key, command);
-									updateKeyword();
-									break;
-								case MODIFIED:
-									command = new Command(key, document);
-									log("Modified: " + key);
-									log(command.toString());
+										mapData.put(key, command);
+										updateKeyword();
+										break;
+									case MODIFIED:
+										command = new Command(key, document);
+										log("Modified: " + key);
+										log(command.toString());
 
-									Command oldCommand = mapData.get(key);
-									if (command.responseTimestamp.getSeconds() != oldCommand.responseTimestamp.getSeconds()) {
-										for (String waitingKey : waitingKeys) {
-											if (waitingKey.equals(key)) {
-												addOutputMessage(command.response);
-												waitingKeys.remove(key);
+										Command oldCommand = mapData.get(key);
+										if (command.responseTimestamp.getSeconds() != oldCommand.responseTimestamp.getSeconds()) {
+											for (String waitingKey : waitingKeys) {
+												if (waitingKey.equals(key)) {
+													addOutputMessage(command.response);
+													waitingKeys.remove(key);
+												}
 											}
 										}
-									}
 
-									mapData.put(key, command);
-									updateKeyword();
-									break;
-								case REMOVED:
-									command = new Command(key, document);
-									log("Removed: " + key);
-									log(command.toString());
+										mapData.put(key, command);
+										updateKeyword();
+										break;
+									case REMOVED:
+										command = new Command(key, document);
+										log("Removed: " + key);
+										log(command.toString());
 
-									mapData.remove(key);
-									updateKeyword();
-									break;
+										mapData.remove(key);
+										updateKeyword();
+										break;
+								}
+							} catch (Exception e1) {
+								log("error: " + key);
+								e1.printStackTrace();
 							}
-						} catch (Exception e1) {
-							log("error: " + key);
-							e1.printStackTrace();
 						}
-					}
 
-				}
-			});
+					}
+				});
 
 	}
 
@@ -265,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public void onBeginningOfSpeech() {
 			log("onBeginningOfSpeech");
-			changeStatus(LISTNING);
+			changeStatus(LISTENING);
 		}
 
 		@Override
@@ -496,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
 		((TextView) linearLayout.findViewById(R.id.textview)).setText(msg);
 		tts(msg);
 
-		b.keywordList.addView(linearLayout);
+		b.LLList.addView(linearLayout);
 		b.SVScrollView.post(new Runnable() {
 			@Override
 			public void run() {
@@ -572,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
 				log(mResult);
 
 
-				changeStatus(LISTNING);
+				changeStatus(LISTENING);
 				break;
 
 			case R.id.finalResult:

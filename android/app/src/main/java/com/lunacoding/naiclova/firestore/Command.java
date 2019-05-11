@@ -1,4 +1,4 @@
-package com.lunacoding.stellar.firestore;
+package com.lunacoding.naiclova.firestore;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.QueryDocumentSnapshot;

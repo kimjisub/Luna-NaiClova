@@ -1,4 +1,4 @@
-package com.lunacoding.stellar.recognizer;
+package com.lunacoding.naiclova.recognizer;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -8,6 +8,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:597278062464:android:8ee94a294279cf33",
+        "android_client_info": {
+          "package_name": "com.lunacoding.naiclova"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597278062464-phomsqpka55uo5v5dh4kp5tl90nkq9me.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDv0Cck-lep_5u8ckm6Uk63lIt8m4UxAqI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597278062464-phomsqpka55uo5v5dh4kp5tl90nkq9me.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:597278062464:android:f52875834c074fe0",
         "android_client_info": {
           "package_name": "com.lunacoding.stellar"
@@ -25,15 +54,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597278062464-phomsqpka55uo5v5dh4kp5tl90nkq9me.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

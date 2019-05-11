@@ -1,4 +1,4 @@
-package com.lunacoding.stellar
+package com.lunacoding.naiclova
 
 import org.junit.Test
 

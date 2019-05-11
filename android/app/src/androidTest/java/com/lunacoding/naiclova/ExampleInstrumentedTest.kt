@@ -1,4 +1,4 @@
-package com.lunacoding.stellar
+package com.lunacoding.naiclova
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
