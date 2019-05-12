@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
 				for (String s : AL_keywordSelected)
 					str += s + " ";
 
+				new MessageViewer(MainActivity.this, b.LLList, MessageViewer.Type.IN).changeText(str);
 				sendMsg(str);
 				initKeyword();
 			}
