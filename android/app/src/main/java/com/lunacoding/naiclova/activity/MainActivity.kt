@@ -3,9 +3,13 @@ package com.lunacoding.naiclova.activity
 import android.Manifest
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.*
 import android.service.voice.AlwaysOnHotwordDetector.EventPayload
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.KeyEvent
@@ -29,16 +33,15 @@ import com.lunacoding.naiclova.R
 import com.lunacoding.naiclova.databinding.ActivityMainBinding
 import com.lunacoding.naiclova.firestore.Command
 import com.lunacoding.naiclova.recognizer.AudioWriterPCM
-import com.lunacoding.naiclova.recognizer.NaverRecognizer
 import com.lunacoding.naiclova.view.KeywordView
-import com.naver.speech.clientapi.SpeechRecognitionResult
-import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 	var b: ActivityMainBinding? = null
-	private var handler: RecognitionHandler? = null
-	private var naverRecognizer: NaverRecognizer? = null
+	private val sttIntent: Intent by lazy { Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH) }
+	private val stt: SpeechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(this) }
+
 	private var writer: AudioWriterPCM? = null
 	var IVs_status: Array<ImageView> = arrayOf()
 	private var mResult: String? = null
@@ -71,8 +74,7 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		b = DataBindingUtil.setContentView(this, R.layout.activity_main)
 		initVar()
-		handler = RecognitionHandler(this)
-		naverRecognizer = NaverRecognizer(this, handler!!, CLIENT_ID)
+
 		TedPermission.with(this)
 				.setPermissionListener(object : PermissionListener {
 					override fun onPermissionGranted() {
@@ -90,13 +92,14 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	fun start() {
-		//startService(new Intent(MainActivity.this, HotwordService.class));
-		//bindService(new Intent(MainActivity.this, HotwordService.class), sconn, BIND_AUTO_CREATE);
+		//startService (Intent(this@MainActivity, HotwordService::class.java))
+		//bindService(Intent(this@MainActivity, HotwordService::class.java), sconn, BIND_AUTO_CREATE)
 		tts = TextToSpeech(applicationContext) { status: Int ->
 			if (status != TextToSpeech.ERROR) {
 				tts!!.language = Locale.KOREAN
 			}
 		}
+		stt.setRecognitionListener(recognitionListener)
 		b!!.button.setOnClickListener { view: View? ->
 			if (AL_keywordSelected.size == 0) startVoice() else {
 				var str = ""
@@ -347,11 +350,15 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	fun startVoice() {
-		if (naverRecognizer?.speechRecognizer?.isRunning!!) {
-			naverRecognizer!!.recognize()
-		} else {
-			naverRecognizer?.speechRecognizer?.stop()
-		}
+		if (!sttRuning)
+			stt.startListening(sttIntent)
+		else
+			stt.stopListening()
+//		if (naverRecognizer?.speechRecognizer?.isRunning!!) {
+//			naverRecognizer!!.recognize()
+//		} else {
+//			naverRecognizer?.speechRecognizer?.stop()
+//		}
 	}
 
 	fun log(msg: String?) {
@@ -368,71 +375,92 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	var messageViewer: MessageViewer? = null
-	private fun handleMessage(msg: Message) {
-		when (msg.what) {
-			R.id.clientReady -> {
-				log("clientReady")
-				writer =
-						AudioWriterPCM(Environment.getExternalStorageDirectory().absolutePath + "/NaverSpeechTest")
-				writer!!.open("Test")
-				changeStatus(START)
-				messageViewer = MessageViewer(this@MainActivity, b!!.LLList, MessageViewer.Type.IN)
-			}
-			R.id.audioRecording ->                //log("audioRecording");
-				writer!!.write(msg.obj as ShortArray)
-			R.id.partialResult -> {
-				log("partialResult")
-				mResult = msg.obj as String
-				log(mResult)
-				messageViewer!!.changeText(mResult)
-				changeStatus(LISTENING)
-			}
-			R.id.finalResult -> {
-				log("finalResult")
-				val speechRecognitionResult = msg.obj as SpeechRecognitionResult
-				val results = speechRecognitionResult.results
-				val result = results[0]
-				log("onResults: $result")
-				messageViewer!!.changeText(mResult)
-				sendMsg(result)
-			}
-			R.id.recognitionError -> {
-				log("recognitionError")
-				if (writer != null) {
-					writer!!.close()
-				}
-				changeStatus(WAITING)
-			}
-			R.id.clientInactive -> {
-				log("clientInactive")
-				if (writer != null) {
-					writer!!.close()
-				}
-				changeStatus(WAITING)
-			}
-		}
-	}
+//	private fun handleMessage(msg: Message) {
+//		when (msg.what) {
+//			R.id.clientReady -> {
+//				log("clientReady")
+//				writer =
+//						AudioWriterPCM(Environment.getExternalStorageDirectory().absolutePath + "/NaverSpeechTest")
+//				writer!!.open("Test")
+//				changeStatus(START)
+//				messageViewer = MessageViewer(this@MainActivity, b!!.LLList, MessageViewer.Type.IN)
+//			}
+//			R.id.audioRecording ->                //log("audioRecording");
+//				writer!!.write(msg.obj as ShortArray)
+//			R.id.partialResult -> {
+//				log("partialResult")
+//				mResult = msg.obj as String
+//				log(mResult)
+//				messageViewer!!.changeText(mResult)
+//				changeStatus(LISTENING)
+//			}
+//			R.id.finalResult -> {
+//				log("finalResult")
+//				val speechRecognitionResult = msg.obj as SpeechRecognitionResult
+//				val results = speechRecognitionResult.results
+//				val result = results[0]
+//				log("onResults: $result")
+//				messageViewer!!.changeText(mResult)
+//				sendMsg(result)
+//			}
+//			R.id.recognitionError -> {
+//				log("recognitionError")
+//				if (writer != null) {
+//					writer!!.close()
+//				}
+//				changeStatus(WAITING)
+//			}
+//			R.id.clientInactive -> {
+//				log("clientInactive")
+//				if (writer != null) {
+//					writer!!.close()
+//				}
+//				changeStatus(WAITING)
+//			}
+//		}
+//	}
 
-	internal class RecognitionHandler(activity: MainActivity) : Handler() {
-		private val mActivity: WeakReference<MainActivity>
-		override fun handleMessage(msg: Message) {
-			val activity = mActivity.get()
-			activity?.handleMessage(msg)
+	var sttRuning = false
+	val recognitionListener = object : RecognitionListener {
+		override fun onReadyForSpeech(params: Bundle?) {
 		}
 
-		init {
-			mActivity = WeakReference(activity)
+		override fun onBeginningOfSpeech() {
+			sttRuning = true
 		}
-	}
 
-	override fun onStart() {
-		super.onStart()
-		naverRecognizer?.speechRecognizer?.initialize()
-	}
+		override fun onRmsChanged(rmsdB: Float) {
+		}
 
-	override fun onStop() {
-		super.onStop()
-		naverRecognizer?.speechRecognizer?.release()
+		override fun onBufferReceived(buffer: ByteArray?) {
+		}
+
+		override fun onEndOfSpeech() {
+			sttRuning = false
+		}
+
+		override fun onError(error: Int) {
+		}
+
+		override fun onResults(results: Bundle?) {
+			var result = ""
+			val matches: ArrayList<String> = results!!.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)!!
+			for (str in matches) {
+				Log.d("TEST/RESULTS", str)
+				result += str
+			}
+
+			log("onResults: $result")
+			messageViewer!!.changeText(mResult)
+			sendMsg(result)
+		}
+
+		override fun onPartialResults(partialResults: Bundle?) {
+		}
+
+		override fun onEvent(eventType: Int, params: Bundle?) {
+		}
+
 	}
 
 	companion object {
