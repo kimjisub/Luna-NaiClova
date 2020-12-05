@@ -41,7 +41,7 @@ class Command {
 		command = document.getString("command")
 		keyword = document["keyword"] as ArrayList<String>?
 		response = document.getString("response")
-		responseStandby = document.getBoolean("responseStandby")!!
+		responseStandby = document.getBoolean("responseStandby") ?: false
 		responseTimestamp = document.getTimestamp("responseTimestamp")
 	}
 
