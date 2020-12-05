@@ -32,6 +32,7 @@ import com.lunacoding.naiclova.HotwordService.MyBinder
 import com.lunacoding.naiclova.HotwordService.OnHotwordListener
 import com.lunacoding.naiclova.R
 import com.lunacoding.naiclova.firestore.Command
+import com.lunacoding.naiclova.manager.MessageItem
 import com.lunacoding.naiclova.manager.MessageManager
 import com.lunacoding.naiclova.recognizer.AudioWriterPCM
 import com.lunacoding.naiclova.view.KeywordView
@@ -174,9 +175,6 @@ class MainActivity : AppCompatActivity() {
                     if (AL_keywordSelected.size == 0) toggleVoice() else {
                         var str = ""
                         for (s in AL_keywordSelected) str += "$s "
-                        MessageViewer(this@MainActivity, LL_list, MessageViewer.Type.IN).changeText(
-                            str
-                        )
                         sendMsg(str)
                         initKeyword()
                     }
@@ -224,7 +222,7 @@ class MainActivity : AppCompatActivity() {
                                 if (command.responseTimestamp!!.seconds != oldCommand!!.responseTimestamp!!.seconds) {
                                     for (waitingKey in waitingKeys) {
                                         if (waitingKey == key) {
-                                            addOutputMessage(command.response)
+                                            addOutputMessage(command.response!!)
                                             waitingKeys.remove(key)
                                         }
                                     }
@@ -287,7 +285,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (found) {
             if (!command!!.responseStandby) {
-                addOutputMessage(command.response)
+                addOutputMessage(command.response!!)
                 firebase.child("queue").push().setValue(command.command)
             } else {
                 addOutputMessage("잠시만 기다려주세요...")
@@ -377,44 +375,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ========================================================================================= Add message
-    class MessageViewer(var context: Context, parent: LinearLayout, type: Type) {
-        enum class Type {
-            IN, OUT
-        }
 
-        var view: LinearLayout
-        var textView: TextView
-        var message: String? = null
-        fun changeText(message: String?) {
-            this.message = message
-            textView.text = message
-        }
-
-        init {
-            view = View.inflate(
-                context,
-                if (type == Type.IN) R.layout.message_in else R.layout.message_out,
-                null
-            ) as LinearLayout
-            textView = view.findViewById(R.id.textview)
-            parent.addView(view)
-        }
+    fun addInputMessage(msg: String) {
+        mm.newMessage(msg, MessageItem.Type.IN)
+        //SV_scrollView.post { SV_scrollView.smoothScrollBy(0, 10000) }
     }
 
-    fun addInputMessage(msg: String?) {
-        val linearLayout =
-            View.inflate(this@MainActivity, R.layout.message_in, null) as LinearLayout
-        (linearLayout.findViewById<View>(R.id.textview) as TextView).text = msg
-        LL_list.addView(linearLayout)
-        //SV_scrollView.post(new Runnable() { @Override public void run() { SV_scrollView.smoothScrollBy(0, 10000); } });
-    }
-
-    fun addOutputMessage(msg: String?) {
-        val linearLayout =
-            View.inflate(this@MainActivity, R.layout.message_out, null) as LinearLayout
-        (linearLayout.findViewById<View>(R.id.textview) as TextView).text = msg
-        tts(msg)
-        LL_list.addView(linearLayout)
+    fun addOutputMessage(msg: String) {
+        mm.newMessage(msg, MessageItem.Type.OUT)
         SV_scrollView.post { SV_scrollView.smoothScrollBy(0, 10000) }
     }
 
@@ -429,11 +397,6 @@ class MainActivity : AppCompatActivity() {
             stt.startListening(sttIntent)
         else
             stt.stopListening()
-//		if (naverRecognizer?.speechRecognizer?.isRunning!!) {
-//			naverRecognizer!!.recognize()
-//		} else {
-//			naverRecognizer?.speechRecognizer?.stop()
-//		}
     }
 
     fun log(msg: String?) {
@@ -448,52 +411,6 @@ class MainActivity : AppCompatActivity() {
         }
         return true
     }
-
-    var messageViewer: MessageViewer? = null
-//	private fun handleMessage(msg: Message) {
-//		when (msg.what) {
-//			R.id.clientReady -> {
-//				log("clientReady")
-//				writer =
-//						AudioWriterPCM(Environment.getExternalStorageDirectory().absolutePath + "/NaverSpeechTest")
-//				writer!!.open("Test")
-//				changeStatus(START)
-//				messageViewer = MessageViewer(this@MainActivity, b!!.LLList, MessageViewer.Type.IN)
-//			}
-//			R.id.audioRecording ->                //log("audioRecording");
-//				writer!!.write(msg.obj as ShortArray)
-//			R.id.partialResult -> {
-//				log("partialResult")
-//				mResult = msg.obj as String
-//				log(mResult)
-//				messageViewer!!.changeText(mResult)
-//				changeStatus(LISTENING)
-//			}
-//			R.id.finalResult -> {
-//				log("finalResult")
-//				val speechRecognitionResult = msg.obj as SpeechRecognitionResult
-//				val results = speechRecognitionResult.results
-//				val result = results[0]
-//				log("onResults: $result")
-//				messageViewer!!.changeText(mResult)
-//				sendMsg(result)
-//			}
-//			R.id.recognitionError -> {
-//				log("recognitionError")
-//				if (writer != null) {
-//					writer!!.close()
-//				}
-//				changeStatus(WAITING)
-//			}
-//			R.id.clientInactive -> {
-//				log("clientInactive")
-//				if (writer != null) {
-//					writer!!.close()
-//				}
-//				changeStatus(WAITING)
-//			}
-//		}
-//	}
 
     val recognitionListener = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle?) {
